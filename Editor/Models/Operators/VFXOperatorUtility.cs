@@ -216,6 +216,12 @@ namespace UnityEditor.VFX
             return Dot(delta, delta);
         }
 
+        static public VFXExpression InverseLerp(VFXExpression x, VFXExpression y, VFXExpression s)
+        {
+            //(s - x)/(y - x)
+            return (s - x) / (y - x);
+        }
+
         static public VFXExpression Lerp(VFXExpression x, VFXExpression y, VFXExpression s)
         {
             //x + s(y - x)
@@ -514,7 +520,9 @@ namespace UnityEditor.VFX
         static public VFXExpression SequentialLine(VFXExpression start, VFXExpression end, VFXExpression index, VFXExpression count)
         {
             VFXExpression dt = new VFXExpressionCastUintToFloat(VFXOperatorUtility.Modulo(index, count));
-            dt = dt / new VFXExpressionCastUintToFloat(count);
+            var size = new VFXExpressionCastUintToFloat(count) - VFXOperatorUtility.OneExpression[VFXValueType.Float];
+            size = new VFXExpressionMax(size, VFXOperatorUtility.OneExpression[VFXValueType.Float]);
+            dt = dt / size ;
             dt = new VFXExpressionCombine(dt, dt, dt);
             return VFXOperatorUtility.Lerp(start, end, dt);
         }

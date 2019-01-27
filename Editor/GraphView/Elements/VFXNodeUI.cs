@@ -116,6 +116,7 @@ namespace UnityEditor.VFX.UI
 
         public override void OnSelected()
         {
+            base.OnSelected();
             m_Selected = true;
             UpdateBorder();
         }
@@ -124,6 +125,7 @@ namespace UnityEditor.VFX.UI
         {
             m_Selected = false;
             UpdateBorder();
+            base.OnUnselected();
         }
 
         void UpdateBorder()
@@ -226,6 +228,9 @@ namespace UnityEditor.VFX.UI
                     settingsContainer.AddToClassList("nosettings");
                 }
             }
+
+            if(m_SettingsDivider != null)
+                m_SettingsDivider.visible = hasSettingDivider && hasSettings;
             Profiler.EndSample();
         }
 
@@ -259,6 +264,8 @@ namespace UnityEditor.VFX.UI
 
             foreach (var deletedController in deletedControllers)
             {
+                //Explicitely remove edges before removing anchor.
+                GetFirstAncestorOfType<VFXView>().RemoveAnchorEdges(existingAnchors[deletedController]);
                 container.Remove(existingAnchors[deletedController]);
                 existingAnchors.Remove(deletedController);
             }
