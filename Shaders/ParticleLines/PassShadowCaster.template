@@ -23,12 +23,12 @@ Pass
 #define VFX_VARYING_ALPHATHRESHOLD builtInInterpolants.x
 		
 ${VFXBegin:VFXVertexAdditionalProcess}
-o.pos = VFXApplyShadowBias(o.pos);
+float3 posWS = TransformPositionVFXToWorld(vPos);
+VFXApplyShadowBias(o.VFX_VARYING_POSCS, posWS);
 ${VFXEnd}
 
 // Needed for HDRP
 #define SHADERPASS SHADERPASS_SHADOWS
-#define USE_LEGACY_UNITY_MATRIX_VARIABLES
 		
 	${VFXInclude("Shaders/ParticleLines/Pass.template")}	
 		

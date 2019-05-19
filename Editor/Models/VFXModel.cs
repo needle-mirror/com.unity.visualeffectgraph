@@ -31,7 +31,6 @@ namespace UnityEditor.VFX
         {
             kStructureChanged,      // Model structure (hierarchy) has changed
             kParamChanged,          // Some parameter values have changed
-            kParamPropagated,       // Some parameter values have change and was propagated from the parents
             kSettingChanged,        // A setting value has changed
             kSpaceChanged,          // Space has been changed
             kConnectionChanged,     // Connection have changed
@@ -60,7 +59,7 @@ namespace UnityEditor.VFX
             {
                 int nbRemoved = m_Children.RemoveAll(c => c == null);// Remove bad references if any
                 if (nbRemoved > 0)
-                    Debug.Log(String.Format("Remove {0} child(ren) that couldnt be deserialized from {1} of type {2}", nbRemoved, name, GetType()));
+                    Debug.LogWarning(String.Format("Remove {0} child(ren) that couldnt be deserialized from {1} of type {2}", nbRemoved, name, GetType()));
             }
         }
 
