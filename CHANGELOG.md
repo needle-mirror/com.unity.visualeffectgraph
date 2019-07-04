@@ -4,24 +4,38 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [6.7.1-preview] - 2019-05-20
 
-### Version Updated
-The version number for this package has increased due to a version update of a related graphics package.
+## [6.9.0-preview] - 2019-07-05
+### Fixed
+- Handle a possible exception (ReflectionTypeLoadException) while using VFXParameterBinderEditor
 
-## [6.7.0-preview] - 2019-05-16
+## [6.8.0-preview] - 2019-06-12
+### Added
+- Make multiselection work in a way that do not assume that the same parameter will have the same index in the property sheet.
+- auto recompile when changing shaderpath
+- auto recompile new vfx
+- better detection of default shader path
+- Bitfield control.
+- Move HDRP outputs to HDRP package + expose HDRP queue selection
+- Add exposure weight control for HDRP outputs
+- Subgraphs
+
+## [6.7.0-preview] - 2019-05-21
 ### Added
 - Distortion Outputs (Quad / Mesh)
 - Motion-Vector-Based Flipbook Interpolation
 - Color mapping mode for unlit outputs (Textured/Gradient Mapped)
 - Add Triangle and Octagon primitives for particle outputs
 - Set Attribute is now spaceable on a specific set of attributes (position, velocity, axis...)
+- Trigger : GPUEvent Rate (Over time or Distance)
 
 ### Fixed
+- Fix shader compilation error with debug views
 - Improve AA line rendering
 - Fix screen space size block
 - Crash chaining two spawners each other [Case 1135299](https://issuetracker.unity3d.com/issues/crash-chaining-two-spawners-to-each-other-produces-an-infinite-loop)
 - Inspector : Exposed parameters disregard the initial value [Case 1126471](https://issuetracker.unity3d.com/issues/parameters-exposed-parameters-disregard-the-initial-value)
+- Asset name now displayed in compile errors and output context shaders
 - Fix for linking spawner to spawner while first spawner is linked to initialize + test 
 - Fix space of spaceable slot not copy pasted + test
 - Position (Circle) does not take the Center Z value into account [Case 1146850](https://issuetracker.unity3d.com/issues/blocks-position-circle-does-not-take-the-center-z-value-into-account)
