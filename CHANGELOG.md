@@ -4,6 +4,21 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [5.6.1] - 2019-02-25
+
+## [5.6.0] - 2019-02-21
+
+## [5.5.0-preview] - 2019-02-18
+### Changed
+- Code refactor: all macros with ARGS have been swapped with macros with PARAM. This is because the ARGS macros were incorrectly named.
+
+## [5.4.0-preview] - 2019-02-11
+### Added
+
+### Fixed
+- Incorrect toggle rectangle in VisualEffect inspector
+- Shader compilation with SimpleLit and debug display
+
 ## [5.3.1-preview] - 2019-01-28
 
 ## [5.3.0-preview] - 2019-01-28
