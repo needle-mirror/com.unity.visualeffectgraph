@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using UnityEditor.Experimental.VFX;
-using UnityEngine.Experimental.VFX;
+using UnityEditor.VFX;
+using UnityEngine.VFX;
 using UnityEngine.Profiling;
 
 namespace UnityEditor.VFX
@@ -243,7 +243,7 @@ namespace UnityEditor.VFX
 
         public void SetSettingValue(string name, object value)
         {
-            SetSettingValue(name, value, true);
+            SetSettingValue(name, value, true);         
         }
 
         protected void SetSettingValue(string name, object value, bool notify)
@@ -258,12 +258,21 @@ namespace UnityEditor.VFX
             if (currentValue != value)
             {
                 setting.field.SetValue(setting.instance, value);
+                OnSettingModified(setting);
+                if (setting.instance != this)
+                    setting.instance.OnSettingModified(setting);
                 if (notify)
                 {
                     Invalidate(InvalidationCause.kSettingChanged);
+                    if (setting.instance != this)
+                        setting.instance.Invalidate(InvalidationCause.kSettingChanged);
                 }
             }
         }
+
+        // Override this method to update other settings based on a setting modification
+        // Use OnIvalidate with KSettingChanged and not this method to handle other side effects
+        protected virtual void OnSettingModified(VFXSetting setting) {}
 
         public virtual VFXSetting GetSetting(string  name)
         {
@@ -285,7 +294,7 @@ namespace UnityEditor.VFX
             }
         }
 
-        protected virtual void Invalidate(VFXModel model, InvalidationCause cause)
+        protected internal virtual void Invalidate(VFXModel model, InvalidationCause cause)
         {
             OnInvalidate(model, cause);
             if (m_Parent != null)

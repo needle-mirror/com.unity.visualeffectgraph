@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using UnityEditor.Experimental.VFX;
+using UnityEditor.VFX;
 using UnityEngine;
-using UnityEngine.Experimental.VFX;
+using UnityEngine.VFX;
 using UnityEngine.Profiling;
 using System.Reflection;
 
@@ -663,7 +663,7 @@ namespace UnityEditor.VFX
         public int version { get { return m_GraphVersion; } }
 
         [SerializeField]
-        private int m_GraphVersion = 0;
+        private int m_GraphVersion = CurrentVersion;
 
         [NonSerialized]
         private bool m_GraphSanitized = false;

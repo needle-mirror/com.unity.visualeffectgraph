@@ -4,26 +4,34 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-
-## [6.9.0-preview] - 2019-07-05
-### Fixed
-- Handle a possible exception (ReflectionTypeLoadException) while using VFXParameterBinderEditor
-
-## [6.8.0-preview] - 2019-06-12
+## [7.0.0] - 2019-07-17
 ### Added
 - Make multiselection work in a way that do not assume that the same parameter will have the same index in the property sheet.
 - auto recompile when changing shaderpath
 - auto recompile new vfx
 - better detection of default shader path
 - Bitfield control.
+- Initial Event Name inspector for visual effect asset and component
+- Subgraphs
 - Move HDRP outputs to HDRP package + expose HDRP queue selection
 - Add exposure weight control for HDRP outputs
-- Subgraphs
+- Shader macros for XR single-pass instancing
+- XR single-pass instancing support for indirect draws
+- Inverse trigonometric operators (atan, atan2, asin, acos)
+- Replaced Orient : Fixed rotation with new option Orient : Advanced
+- Loop & Delay integrated to the spawn system
+- Motion Vector support for PlanarPrimitive & Mesh outputs
 
-## [6.7.0-preview] - 2019-05-21
+### Fixed
+- Handle a possible exception (ReflectionTypeLoadException) while using VFXParameterBinderEditor
+- Renamed Parameter Binders to Property Binders. (This will cause breaking serialization for these PropertyBinders : VFXAudioSpectrumBinder, VFXInputMouseBinder, VFXInputMouseBinder, VFXInputTouchBinder, VFXInputTouchBinder, VFXRaycastBinder, VFXTerrainBinder, VFXUIDropdownBinder, VFXUISliderBinder, VFXUIToggleBinder)
+- Renamed Namespace `UnityEngine.Experimental.VFX.Utility` to `UnityEngine.VFX.Utility`
+- Fix normal bending factor computation for primitive outputs
+- Automatic template path detection based on SRP in now working correctly
+
+## [6.7.0-preview] - 2019-05-16
 ### Added
 - Distortion Outputs (Quad / Mesh)
-- Motion-Vector-Based Flipbook Interpolation
 - Color mapping mode for unlit outputs (Textured/Gradient Mapped)
 - Add Triangle and Octagon primitives for particle outputs
 - Set Attribute is now spaceable on a specific set of attributes (position, velocity, axis...)

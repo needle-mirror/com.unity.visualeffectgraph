@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEditor.Experimental.VFX;
+using UnityEditor.VFX;
 
 using NodeID = System.UInt32;
 
@@ -657,6 +657,7 @@ namespace UnityEditor.VFX.UI
                         if (targetData != null)
                         {
                             PasteModelSettings(targetData, data.settings, targetData.GetType());
+                            targetData.Invalidate(VFXModel.InvalidationCause.kSettingChanged);
                         }
                     }
                 }

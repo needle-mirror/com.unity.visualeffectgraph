@@ -52,19 +52,23 @@ struct VFXSamplerCubeArray
 };
 
 #ifdef VFX_WORLD_SPACE
-float3 TransformDirectionVFXToWorld(float3 dir) { return dir; }
-float3 TransformPositionVFXToWorld(float3 pos)  { return pos; }
-float3 TransformPositionVFXToView(float3 pos)   { return VFXTransformPositionWorldToView(pos); }
-float4 TransformPositionVFXToClip(float3 pos)   { return VFXTransformPositionWorldToClip(pos); }
-float3x3 GetVFXToViewRotMatrix()                { return VFXGetWorldToViewRotMatrix(); }
-float3 GetViewVFXPosition()                     { return VFXGetViewWorldPosition(); }
+float3 TransformDirectionVFXToWorld(float3 dir)             { return dir; }
+float3 TransformPositionVFXToWorld(float3 pos)              { return pos; }
+float3 TransformPositionVFXToView(float3 pos)               { return VFXTransformPositionWorldToView(pos); }
+float4 TransformPositionVFXToClip(float3 pos)               { return VFXTransformPositionWorldToClip(pos); }
+float4 TransformPositionVFXToPreviousClip(float3 pos)       { return VFXTransformPositionWorldToPreviousClip(pos); }
+float4 TransformPositionVFXToNonJitteredClip(float3 pos)    { return VFXTransformPositionWorldToNonJitteredClip(pos); }
+float3x3 GetVFXToViewRotMatrix()                            { return VFXGetWorldToViewRotMatrix(); }
+float3 GetViewVFXPosition()                                 { return VFXGetViewWorldPosition(); }
 #else
-float3 TransformDirectionVFXToWorld(float3 dir) { return mul(VFXGetObjectToWorldMatrix(),float4(dir,0.0f)).xyz; }
-float3 TransformPositionVFXToWorld(float3 pos)  { return mul(VFXGetObjectToWorldMatrix(),float4(pos,1.0f)).xyz; }
-float3 TransformPositionVFXToView(float3 pos)   { return VFXTransformPositionWorldToView(mul(VFXGetObjectToWorldMatrix(), float4(pos, 1.0f)).xyz); }
-float4 TransformPositionVFXToClip(float3 pos)   { return VFXTransformPositionObjectToClip(pos); }
-float3x3 GetVFXToViewRotMatrix()                { return mul(VFXGetWorldToViewRotMatrix(),(float3x3)VFXGetObjectToWorldMatrix()); }
-float3 GetViewVFXPosition()                     { return mul(VFXGetWorldToObjectMatrix(),float4(VFXGetViewWorldPosition(),1.0f)).xyz; }
+float3 TransformDirectionVFXToWorld(float3 dir)             { return mul(VFXGetObjectToWorldMatrix(),float4(dir,0.0f)).xyz; }
+float3 TransformPositionVFXToWorld(float3 pos)              { return mul(VFXGetObjectToWorldMatrix(),float4(pos,1.0f)).xyz; }
+float3 TransformPositionVFXToView(float3 pos)               { return VFXTransformPositionWorldToView(mul(VFXGetObjectToWorldMatrix(), float4(pos, 1.0f)).xyz); }
+float4 TransformPositionVFXToClip(float3 pos)               { return VFXTransformPositionObjectToClip(pos); }
+float4 TransformPositionVFXToPreviousClip(float3 pos)       { return VFXTransformPositionObjectToPreviousClip(pos); }
+float4 TransformPositionVFXToNonJitteredClip(float3 pos)    { return VFXTransformPositionObjectToNonJitteredClip(pos); }
+float3x3 GetVFXToViewRotMatrix()                            { return mul(VFXGetWorldToViewRotMatrix(),(float3x3)VFXGetObjectToWorldMatrix()); }
+float3 GetViewVFXPosition()                                 { return mul(VFXGetWorldToObjectMatrix(),float4(VFXGetViewWorldPosition(),1.0f)).xyz; }
 #endif
 
 #define VFX_SAMPLER(name) GetVFXSampler(##name,sampler##name)
@@ -350,7 +354,13 @@ float4 SampleGradient(float v,float u)
 float SampleCurve(float4 curveData,float u)
 {
     float uNorm = (u * curveData.x) + curveData.y;
+
+#if defined(SHADER_API_METAL)
+    // Workaround metal compiler crash that is caused by switch statement uint byte shift
+    switch(asint(curveData.w) >> 2)
+#else
     switch(asuint(curveData.w) >> 2)
+#endif
     {
         case 1: uNorm = HalfTexelOffset(frac(min(1.0f - 1e-10f,uNorm))); break; // clamp end. Dont clamp at 1 or else the frac will make it 0...
         case 2: uNorm = HalfTexelOffset(frac(max(0.0f,uNorm))); break; // clamp start

@@ -162,11 +162,19 @@ namespace UnityEditor.VFX
         abstract public Type SRPOutputDataType { get; }
     }
 
-    // Not in LWRP package because we dont want to add a dependency on VFXGraph
-    class VFXLWRPBinder : VFXSRPBinder
+    // Not in Universal package because we dont want to add a dependency on VFXGraph
+    class VFXUniversalBinder : VFXSRPBinder
     {
-        public override string templatePath { get { return "Packages/com.unity.visualeffectgraph/Shaders/RenderPipeline/LWRP"; } }
-        public override string SRPAssetTypeStr { get { return "LightweightRenderPipelineAsset"; } }
+        public override string templatePath { get { return "Packages/com.unity.visualeffectgraph/Shaders/RenderPipeline/Universal"; } }
+        public override string SRPAssetTypeStr { get { return "UniversalRenderPipelineAsset"; } }
+        public override Type SRPOutputDataType { get { return null; } }
+    }
+
+    // This is the default binder used if no SRP is used in the project
+    class VFXLegacyBinder : VFXSRPBinder
+    {
+        public override string templatePath { get { return "Packages/com.unity.visualeffectgraph/Shaders/RenderPipeline/Legacy"; } }
+        public override string SRPAssetTypeStr { get { return "None"; } }
         public override Type SRPOutputDataType { get { return null; } }
     }
 
@@ -417,12 +425,13 @@ namespace UnityEditor.VFX
                 {
                     VFXSRPBinder binder = (VFXSRPBinder)Activator.CreateInstance(binderType);
                     string SRPAssetTypeStr = binder.SRPAssetTypeStr;
+
                     if (srpBinders.ContainsKey(SRPAssetTypeStr))
                         throw new Exception(string.Format("The SRP of asset type {0} is already registered ({1})", SRPAssetTypeStr, srpBinders[SRPAssetTypeStr].GetType()));
                     srpBinders[SRPAssetTypeStr] = binder;
 
                     if (VFXViewPreference.advancedLogs)
-                        Debug.Log(string.Format("Register {0} SRP for VFX", SRPAssetTypeStr));
+                        Debug.Log(string.Format("Register {0} for VFX", SRPAssetTypeStr));
                 }
                 catch(Exception e)
                 {
@@ -435,12 +444,9 @@ namespace UnityEditor.VFX
         {
             get
             {
-                if (GraphicsSettings.renderPipelineAsset == null)
-                    return null;
-
                 LoadSRPBindersIfNeeded();
                 VFXSRPBinder binder = null;
-                srpBinders.TryGetValue(GraphicsSettings.renderPipelineAsset.GetType().Name, out binder);
+                srpBinders.TryGetValue(GraphicsSettings.renderPipelineAsset == null ? "None" : GraphicsSettings.renderPipelineAsset.GetType().Name, out binder);
 
                 if (binder == null)
                     throw new NullReferenceException("The SRP was not registered in VFX: " + GraphicsSettings.renderPipelineAsset.GetType());
