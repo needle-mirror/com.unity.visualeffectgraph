@@ -4,8 +4,15 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [7.1.6] - 2019-11-22
+## [7.1.7] - 2019-12-11
+### Fixed
+- subgraph block into subgraph context no longer forget parameter values.
+- Fix exception when compiling an asset with a turbulence block in absolute mode
+- Fixed GetCustomAttribute that was locked to Current
+- Shader compilation now works when using view direction in shader graph
+- Depth Position and Collision blocks now work correctly in local space systems
 
+## [7.1.6] - 2019-11-22
 ### Added
 - New quad distortion output for particle strips
 - New attribute for strips: particleCountInStrip
