@@ -4,6 +4,24 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [7.2.0] - 2020-02-10
+### Added
+- Right click on edge to create a interstitial node.
+- Range and Min attributes support on int and uint parameters
+- New Construct Matrix from Vector4 operator
+
+### Fixed
+- Moved VFX Event Tester Window visibility to Component Play Controls SceneView Window
+- Universal Render Pipeline : Fog integration for Exponential mode [Case 1177594] (https://issuetracker.unity3d.com/issues/urp-slash-fog-vfx-particles)
+- Fix typo in strip tangent computation
+- Filter out Direction type on inconsistent operator [Case 1201681](https://issuetracker.unity3d.com/product/unity/issues/guid/1201681/)
+- Exclude MouseEvent, RigidBodyCollision, TriggerEvent & Sphere binders when physics modules isn't available
+- Visual Effect Activation Track : Handle empty string in ExposedProperty
+- in some cases AABox position gizmo would not move when dragged.
+- Inspector doesn't trigger any exception if VisualEffectAsset comes from an Asset Bundle [case 1203616](https://issuetracker.unity3d.com/issues/visual-effect-component-is-not-fully-shown-in-the-inspector-if-vfx-is-loaded-from-asset-bundle)
+- OnStop Event to the start of a Spawn Context makes it also trigger when OnPlay is sent [Case 1198339] https://issuetracker.unity3d.com/product/unity/issues/guid/1198339/
+- Remove unexpected public API : UnityEditor.VFX.VFXSeedMode & IncrementStripIndexOnStart
+
 ## [7.1.8] - 2020-01-20
 
 Version Updated
