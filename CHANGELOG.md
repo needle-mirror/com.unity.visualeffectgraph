@@ -4,68 +4,13 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [7.2.1] - 2020-02-14
-
-Version Updated
-The version number for this package has increased due to a version update of a related graphics package.
-
-## [7.2.0] - 2020-02-10
-### Added
-- Right click on edge to create a interstitial node.
-- Range and Min attributes support on int and uint parameters
-- New Construct Matrix from Vector4 operator
+## [8.0.1] - 2020-05-25
 
 ### Fixed
-- Moved VFX Event Tester Window visibility to Component Play Controls SceneView Window
-- Universal Render Pipeline : Fog integration for Exponential mode [Case 1177594] (https://issuetracker.unity3d.com/issues/urp-slash-fog-vfx-particles)
-- Fix typo in strip tangent computation
-- Filter out Direction type on inconsistent operator [Case 1201681](https://issuetracker.unity3d.com/product/unity/issues/guid/1201681/)
-- Exclude MouseEvent, RigidBodyCollision, TriggerEvent & Sphere binders when physics modules isn't available
-- Visual Effect Activation Track : Handle empty string in ExposedProperty
-- in some cases AABox position gizmo would not move when dragged.
-- Inspector doesn't trigger any exception if VisualEffectAsset comes from an Asset Bundle [case 1203616](https://issuetracker.unity3d.com/issues/visual-effect-component-is-not-fully-shown-in-the-inspector-if-vfx-is-loaded-from-asset-bundle)
-- OnStop Event to the start of a Spawn Context makes it also trigger when OnPlay is sent [Case 1198339] https://issuetracker.unity3d.com/product/unity/issues/guid/1198339/
-- Remove unexpected public API : UnityEditor.VFX.VFXSeedMode & IncrementStripIndexOnStart
+- Fix Changelog
 
-## [7.1.8] - 2020-01-20
+## [8.0.0] - 2020-05-25
 
-Version Updated
-The version number for this package has increased due to a version update of a related graphics package.
-
-## [7.1.7] - 2019-12-11
-### Fixed
-- subgraph block into subgraph context no longer forget parameter values.
-- Fix exception when compiling an asset with a turbulence block in absolute mode
-- Fixed GetCustomAttribute that was locked to Current
-- Shader compilation now works when using view direction in shader graph
-- Depth Position and Collision blocks now work correctly in local space systems
-
-## [7.1.6] - 2019-11-22
-### Added
-- New quad distortion output for particle strips
-- New attribute for strips: particleCountInStrip
-- New options for quad strips texture mapping: swap UV and custom mapping
-
-### Fixed
-- Fix shader interpolants with shader graph and particle strips
-- SpawnIndex attribute is now working correctly in Initialize context
-- Remove useless VFXLibrary clears that caused pop-up menu to take long opening times
-- Make sure the subgraph is added to the graph when we set the setting. Fix exception on Convert To Subgraph.
-- Subgraph operators appear on drag edge on graph.
-- Allow alpha clipping of motion vector for transparent outputs [Case 1192930] (https://issuetracker.unity3d.com/product/unity/issues/guid/1192930/)
-- Removed Unnecessary reference to HDRP Runtime Assembly in VFX Runtime Assembly
-
-## [7.1.5] - 2019-11-15
-
-Version Updated
-The version number for this package has increased due to a version update of a related graphics package.
-
-## [7.1.4] - 2019-11-13
-
-Version Updated
-The version number for this package has increased due to a version update of a related graphics package.
-
-## [7.1.3] - 2019-09-19
 ### Added
 - Tooltips for Attributes
 - Custom Inspector for Spawn context, delay settings are more user friendly.
@@ -74,9 +19,24 @@ The version number for this package has increased due to a version update of a r
 - Custom Z axis option for strip output
 - Custom Inspector for Update context, display update position/rotation instead of integration
 - Tooltips to blocks, nodes, contexts, and various menus and options
+- VFX asset compilation is done at import instead of when the asset is saved.
 - New operators: Exp, Log and LoadTexture
+- Duplicate with edges.
+- Right click on edge to create a interstitial node.
+- New quad distortion output for particle strips
+- New attribute for strips: particleCountInStrip
+- New options for quad strips texture mapping: swap UV and custom mapping
+- Naming for particles system and spawn context
+- Noise evaluation now performed on CPU when possible
+- Range and Min attributes support on int and uint parameters
+- New Construct Matrix from Vector4 operator
 
 ### Fixed
+- Moved VFX Event Tester Window visibility to Component Play Controls SceneView Window
+- Universal Render Pipeline : Fog integration for Exponential mode [Case 1177594] (https://issuetracker.unity3d.com/issues/urp-slash-fog-vfx-particles)
+- Correct VFXSettings display in Shader Graph compatible outputs
+- No more NullReference on sub-outputs after domain reload
+- Fix typo in strip tangent computation
 - Infinite recompilation using subgraph [Case 1186191] (https://issuetracker.unity3d.com/product/unity/issues/guid/1186191/)
 - Modifying a shader used by an output mesh context now automatically updates the currently edited VFX
 - Possible loss of shadergraph reference in unlit output
@@ -92,14 +52,30 @@ The version number for this package has increased due to a version update of a r
 - Fix output settings correctly filtered dependeing on shader graph use or not
 - Fix some cases were normal/tangent were not passes as interpolants with shader graph
 - Make normals/tangents work in unlit output with shader graph
+- Fix shader interpolants with shader graph and particle strips
+- SpawnIndex attribute is now working correctly in Initialize context
+- Remove useless VFXLibrary clears that caused pop-up menu to take long opening times
+- Make sure the subgraph is added to the graph when we set the setting. Fix exception on Convert To Subgraph.
+- Subgraph operators appear on drag edge on graph.
 - Sample Scene Color & Scene Depth from Shader Graph Integration using High Definition and Universal Render Pipeline
-
-## [7.1.2] - 2019-09-19
-### Fixed
-- Universal Render Pipeline : Fog integration for Exponential mode [Case 1177594](https://issuetracker.unity3d.com/issues/urp-slash-fog-vfx-particles)
-- Correct VFXSettings display in Shader Graph compatible outputs
-- No more NullReference on sub-outputs after domain reload
-- Fix typo in strip tangent computation
+- Removed Unnecessary reference to HDRP Runtime Assembly in VFX Runtime Assembly
+- Allow alpha clipping of motion vector for transparent outputs [Case 1192930] (https://issuetracker.unity3d.com/product/unity/issues/guid/1192930/)
+- subgraph block into subgraph context no longer forget parameter values.
+- Fix exception when compiling an asset with a turbulence block in absolute mode
+- Fixed GetCustomAttribute that was locked to Current
+- Shader compilation now works when using view direction in shader graph
+- Fix for destroying selected component corrupt "Play Controls" window
+- Depth Position and Collision blocks now work correctly in local space systems
+- Filter out Direction type on inconsistent operator [Case 1201681](https://issuetracker.unity3d.com/product/unity/issues/guid/1201681/)
+- Exclude MouseEvent, RigidBodyCollision, TriggerEvent & Sphere binders when physics modules isn't available
+- Visual Effect Activation Track : Handle empty string in ExposedProperty
+- in some cases AABox position gizmo would not move when dragged.
+- Inspector doesn't trigger any exception if VisualEffectAsset comes from an Asset Bundle [case 1203616](https://issuetracker.unity3d.com/issues/visual-effect-component-is-not-fully-shown-in-the-inspector-if-vfx-is-loaded-from-asset-bundle)
+- OnStop Event to the start of a Spawn Context makes it also trigger when OnPlay is sent [Case 1198339] https://issuetracker.unity3d.com/product/unity/issues/guid/1198339/
+- Remove unexpected public API : UnityEditor.VFX.VFXSeedMode & IncrementStripIndexOnStart
+- Fix yamato error : check vfx manager on domain reload instead of vfx import.
+- Filter out unrelevant events from event desc while compiling
+- Missing Packing.hlsl include while using an unlit shadergraph.
 
 ## [7.1.1] - 2019-09-05
 ### Added

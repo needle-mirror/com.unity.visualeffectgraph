@@ -31,6 +31,7 @@ namespace  UnityEditor.VFX.UI
                     {Event.KeyboardEvent("^>"), view.FrameNext },
                     {Event.KeyboardEvent("F7"), view.Compile},
                     {Event.KeyboardEvent("#d"), view.OutputToDot},
+                    {Event.KeyboardEvent("^&d"), view.DuplicateSelectionWithEdges},
                     {Event.KeyboardEvent("^#d"), view.OutputToDotReduced},
                     {Event.KeyboardEvent("#c"), view.OutputToDotConstantFolding},
                     {Event.KeyboardEvent("^r"), view.ReinitComponents},
@@ -230,8 +231,6 @@ namespace  UnityEditor.VFX.UI
 
         public bool autoCompile {get; set; }
 
-        public bool autoCompileDependent { get; set; }
-
         void Update()
         {
             if (graphView == null)
@@ -258,9 +257,13 @@ namespace  UnityEditor.VFX.UI
                         {
                             filename += "*";
                         }
+                        if (autoCompile && graph.IsExpressionGraphDirty() && !graph.GetResource().isSubgraph)
+                        {
+                            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(graphView.controller.model));
+                        }
+                        else
+                            graph.RecompileIfNeeded(true, true);
 
-
-                        graph.RecompileIfNeeded(!autoCompile,!autoCompileDependent);
                         controller.RecompileExpressionGraphIfNeeded();
                     }
                 }

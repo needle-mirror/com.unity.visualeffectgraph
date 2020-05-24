@@ -66,8 +66,11 @@ namespace UnityEditor.VFX
         {
             get { return m_Label; }
             set {
+                var invalidationCause = InvalidationCause.kUIChanged;
+                if (contextType == VFXContextType.Spawner && m_Label != value)
+                    invalidationCause = InvalidationCause.kSettingChanged;
                 m_Label = value;
-                Invalidate(InvalidationCause.kUIChanged);
+                Invalidate(invalidationCause);
             }
         }
 
@@ -538,7 +541,10 @@ namespace UnityEditor.VFX
                 string assetName = string.Empty;
                 try
                 {
-                    assetName = GetGraph().visualEffectResource.asset.name;
+                    var resource = GetGraph().visualEffectResource;
+                    var asset = resource.asset;
+
+                    assetName = asset!= null ? asset.name : resource.name;
                 }
                 catch(Exception e)
                 {
