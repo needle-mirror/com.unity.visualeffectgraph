@@ -292,12 +292,17 @@ namespace UnityEditor.VFX.UI
             }
         }
 
-        VFXPropertyAttributes m_Attributes;
+        VFXPropertyAttribute[] m_Attributes;
 
         public virtual void UpdateInfos()
         {
-            portType = model.property.type;
-            m_Attributes = model.property.attributes;
+            bool sameAttributes = (m_Attributes == null && model.property.attributes == null) || (m_Attributes != null && model.property.attributes != null && Enumerable.SequenceEqual(m_Attributes, model.property.attributes));
+
+            if (model.property.type != portType || !sameAttributes)
+            {
+                portType = model.property.type;
+                m_Attributes = model.property.attributes;
+            }
         }
 
         public bool indeterminate
@@ -387,7 +392,7 @@ namespace UnityEditor.VFX.UI
             }
         }
 
-        public VFXPropertyAttributes attributes
+        public VFXPropertyAttribute[] attributes
         {
             get { return m_Attributes; }
         }
