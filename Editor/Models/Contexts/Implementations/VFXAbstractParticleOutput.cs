@@ -418,9 +418,6 @@ namespace UnityEditor.VFX
                     yield return "sort";
                     yield return "frustumCulling";
                 }
-
-                if (!subOutput.supportsExcludeFromTAA)
-                    yield return "excludeFromTAA";
             }
         }
 

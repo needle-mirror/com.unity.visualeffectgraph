@@ -7,7 +7,6 @@ using UnityEditor.VFX;
 
 namespace UnityEditor.VFX
 {
-    [ExcludeFromPreset]
     class VFXSubgraphContext : VFXContext
     {
         [VFXSetting, SerializeField]
@@ -266,7 +265,6 @@ namespace UnityEditor.VFX
             if (hasStart)
                 newInputFlowNames.Insert(0, VisualEffectAsset.PlayEventName);
 
-            // Don't notify while doing this else asset is considered dirty after each call at RecreateCopy
             if (m_InputFlowNames == null || !newInputFlowNames.SequenceEqual(m_InputFlowNames) || inputFlowSlot.Length != inputFlowCount)
             {
                 var oldLinks = new Dictionary<string,  List<VFXContextLink>>();
@@ -276,15 +274,14 @@ namespace UnityEditor.VFX
                     oldLinks[GetInputFlowName(i)] = inputFlowSlot[i].link.ToList();
                 }
                 m_InputFlowNames = newInputFlowNames;
-
-                DetachAllInputFlowSlots(false);
+                RefreshInputFlowSlots();
 
                 for (int i = 0; i < inputFlowSlot.Count(); ++i)
                 {
                     List<VFXContextLink> ctxSlot;
                     if (oldLinks.TryGetValue(GetInputFlowName(i), out ctxSlot))
                         foreach (var link in ctxSlot)
-                            InnerLink(link.context, this, link.slotIndex, i, false);
+                            LinkFrom(link.context, link.slotIndex, i);
                 }
             }
             SyncSlots(VFXSlot.Direction.kInput, true);
@@ -407,10 +404,9 @@ namespace UnityEditor.VFX
         public override void CheckGraphBeforeImport()
         {
             base.CheckGraphBeforeImport();
-
             // If the graph is reimported it can be because one of its depedency such as the subgraphs, has been changed.
-            if (!VFXGraph.explicitCompile)
-                ResyncSlots(true);
+
+            ResyncSlots(true);
         }
 
         public override void CollectDependencies(HashSet<ScriptableObject> objs, bool ownedOnly = true)

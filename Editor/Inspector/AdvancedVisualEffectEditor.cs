@@ -166,33 +166,12 @@ namespace UnityEditor.VFX
                 EditorGUILayout.PropertyField(m_VisualEffectAsset, Contents.assetPath);
 
                 bool saveEnabled = GUI.enabled;
-                if (m_VisualEffectAsset.objectReferenceValue == null && !m_VisualEffectAsset.hasMultipleDifferentValues)
+                GUI.enabled = saveEnabled && !m_VisualEffectAsset.hasMultipleDifferentValues && m_VisualEffectAsset.objectReferenceValue != null && resource != null; // Enabled state will be kept for all content until the end of the inspectorGUI.
+                if (GUILayout.Button(Contents.openEditor, EditorStyles.miniButton, Styles.MiniButtonWidth))
                 {
-                    GUI.enabled = saveEnabled;
-                    if (GUILayout.Button(Contents.createAsset, EditorStyles.miniButton, Styles.MiniButtonWidth))
-                    {
-                        string filePath = EditorUtility.SaveFilePanelInProject("", "New Graph", "vfx", "Create new VisualEffect Graph");
-                        if (!string.IsNullOrEmpty(filePath))
-                        {
-                            VisualEffectAssetEditorUtility.CreateTemplateAsset(filePath);
-                            var asset = AssetDatabase.LoadAssetAtPath<VisualEffectAsset>(filePath);
-                            m_VisualEffectAsset.objectReferenceValue = asset;
-                            serializedObject.ApplyModifiedProperties();
-
-                            VFXViewWindow window = EditorWindow.GetWindow<VFXViewWindow>();
-                            window.LoadAsset(asset, targets.Length > 1 ? null : target as VisualEffect);
-                        }
-                    }
-                }
-                else
-                {
-                    GUI.enabled = saveEnabled && !m_VisualEffectAsset.hasMultipleDifferentValues && m_VisualEffectAsset.objectReferenceValue != null && resource != null; // Enabled state will be kept for all content until the end of the inspectorGUI.
-                    if (GUILayout.Button(Contents.openEditor, EditorStyles.miniButton, Styles.MiniButtonWidth))
-                    {
-                        VFXViewWindow window = EditorWindow.GetWindow<VFXViewWindow>();
-                        var asset = m_VisualEffectAsset.objectReferenceValue as VisualEffectAsset;
-                        window.LoadAsset(asset, targets.Length > 1 ? null : target as VisualEffect);
-                    }
+                    VFXViewWindow window = EditorWindow.GetWindow<VFXViewWindow>();
+                    var asset = m_VisualEffectAsset.objectReferenceValue as VisualEffectAsset;
+                    window.LoadAsset(asset, targets.Length > 1 ? null : target as VisualEffect);
                 }
                 GUI.enabled = saveEnabled;
             }

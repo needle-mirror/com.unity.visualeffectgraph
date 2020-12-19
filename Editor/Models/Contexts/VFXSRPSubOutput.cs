@@ -24,7 +24,6 @@ namespace UnityEditor.VFX
         // Caps
         public virtual bool supportsExposure { get { return false; } }
         public virtual bool supportsMotionVector { get { return false; } }
-        public virtual bool supportsExcludeFromTAA { get { return false; } }
 
         // Sealed override as SRP suboutputs cannot have dependencies
         public sealed override void CollectDependencies(HashSet<ScriptableObject> objs, bool ownedOnly = true) {}
@@ -65,13 +64,6 @@ namespace UnityEditor.VFX
         public virtual IEnumerable<KeyValuePair<string, VFXShaderWriter>> GetStencilStateOverridesStr()
         {
             return Enumerable.Empty<KeyValuePair<string, VFXShaderWriter>>();
-        }
-
-        protected override void OnInvalidate(VFXModel model, InvalidationCause cause)
-        {
-            base.OnInvalidate(model, cause);
-            if (owner is VFXModel)
-                ((VFXModel)owner).Invalidate(model, cause); // Forward invalidate event to owner
         }
     }
 }

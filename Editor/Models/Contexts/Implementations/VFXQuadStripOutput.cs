@@ -42,7 +42,7 @@ namespace UnityEditor.VFX
             get
             {
                 IEnumerable<VFXPropertyWithValue> properties = base.inputProperties;
-                if (GetOrRefreshShaderGraphObject() == null)
+                if (shaderGraph == null)
                     properties = properties.Concat(PropertiesFromType("OptionalInputProperties"));
                 if (tilingMode == StripTilingMode.Custom)
                     properties = properties.Concat(PropertiesFromType("CustomUVInputProperties"));
@@ -55,7 +55,7 @@ namespace UnityEditor.VFX
             foreach (var exp in base.CollectGPUExpressions(slotExpressions))
                 yield return exp;
 
-            if (GetOrRefreshShaderGraphObject() == null)
+            if (shaderGraph == null)
                 yield return slotExpressions.First(o => o.name == "mainTexture");
             if (tilingMode == StripTilingMode.Custom)
                 yield return slotExpressions.First(o => o.name == "texCoord");
@@ -120,7 +120,7 @@ namespace UnityEditor.VFX
 
                         var axisZNode = CreateInstance<VFXAttributeParameter>();
                         axisZNode.SetSettingValue("attribute", "axisZ");
-                        axisZNode.position = model.position + new Vector2(-225,150); 
+                        axisZNode.position = model.position + new Vector2(-225, 150);
                         model.GetGraph().AddChild(axisZNode);
 
                         axisZNode.GetOutputSlot(0).Link(orientBlock.GetInputSlot(0));

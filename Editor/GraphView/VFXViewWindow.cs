@@ -190,7 +190,7 @@ namespace  UnityEditor.VFX.UI
             EditorApplication.wantsToQuit += Quitting_Workaround;
 #endif
 
-            var icon = AssetDatabase.LoadAssetAtPath<Texture2D>(VisualEffectGraphPackageInfo.assetPackagePath + "/Editor Default Resources/VFX/" + (EditorGUIUtility.isProSkin ? "vfx_graph_icon_gray_dark.png" : "vfx_graph_icon_gray_light.png"));
+            var icon = AssetDatabase.LoadAssetAtPath<Texture2D>(VisualEffectAssetEditorUtility.editorResourcesPath + "/VFX/" + (EditorGUIUtility.isProSkin ? "vfx_graph_icon_gray_dark.png" : "vfx_graph_icon_gray_light.png"));
             titleContent.image = icon;
         }
 
@@ -232,16 +232,10 @@ namespace  UnityEditor.VFX.UI
         void OnFocus()
         {
             if (graphView != null) // OnFocus can be somehow called before OnEnable
-            graphView.OnFocus();
+                graphView.OnFocus();
         }
 
-        public void OnVisualEffectComponentChanged(IEnumerable<VisualEffect> componentChanged)
-        {
-            if (graphView != null)
-                graphView.OnVisualEffectComponentChanged(componentChanged);
-        }
-
-        public bool autoCompile { get; set; }
+        public bool autoCompile {get; set; }
 
         void Update()
         {
@@ -265,13 +259,12 @@ namespace  UnityEditor.VFX.UI
                     {
                         filename = controller.name;
 
-                        if (EditorUtility.IsDirty(graph))
+                        if (!graph.saved)
                         {
                             filename += "*";
                         }
                         if (autoCompile && graph.IsExpressionGraphDirty() && !graph.GetResource().isSubgraph)
                         {
-
                             VFXGraph.explicitCompile = true;
                             graph.errorManager.ClearAllErrors(null, VFXErrorOrigin.Compilation);
                             using (var reporter = new VFXCompileErrorReporter(controller.graph.errorManager))
@@ -281,21 +274,11 @@ namespace  UnityEditor.VFX.UI
                                 VFXGraph.compileReporter = null;
                             }
                             VFXGraph.explicitCompile = false;
-                        
                         }
                         else
                             graph.RecompileIfNeeded(true, true);
 
-                        bool wasDirty = graph.IsExpressionGraphDirty();
-
                         controller.RecompileExpressionGraphIfNeeded();
-
-                        // Hack to avoid infinite recompilation due to UI triggering a recompile TODO: Fix problematic cases that trigger that error
-                        if (!wasDirty && graph.IsExpressionGraphDirty())
-                        {
-                            Debug.LogError("Expression graph was marked as dirty after compiling context for UI. Discard to avoid infinite compilation loop.");
-                            graph.SetExpressionGraphDirty(false);
-                        }
                     }
                 }
             }
@@ -310,7 +293,8 @@ namespace  UnityEditor.VFX.UI
             if (graphView?.controller?.model?.visualEffectObject != null)
             {
                 graphView.checkoutButton.visible = true;
-                if (!graphView.IsAssetEditable() && Provider.isActive && Provider.enabled)
+                if (!AssetDatabase.IsOpenForEdit(graphView.controller.model.visualEffectObject,
+                    StatusQueryOptions.UseCachedIfPossible) && Provider.isActive && Provider.enabled)
                 {
                     graphView.checkoutButton.SetEnabled(true);
                 }

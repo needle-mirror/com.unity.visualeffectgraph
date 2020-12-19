@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.VFX;
 
-namespace UnityEngine.VFX
+namespace UnityEditor.VFX
 {
     class LoopAndDelay : VFXSpawnerCallbacks
     {

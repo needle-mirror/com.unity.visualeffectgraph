@@ -38,8 +38,7 @@ namespace UnityEditor.VFX
 
         public virtual void OnBeforeSerialize()
         {
-            if (m_Type != null)
-                m_SerializableType = m_Type.AssemblyQualifiedName;
+            m_SerializableType = m_Type != null ? m_Type.AssemblyQualifiedName : string.Empty;
         }
 
         public virtual void OnAfterDeserialize()
@@ -78,7 +77,7 @@ namespace UnityEditor.VFX
             return true; // both null
         }
 
-        public static bool operator !=(SerializableType left, SerializableType right)
+        public static bool operator!=(SerializableType left, SerializableType right)
         {
             return !(left == right);
         }
