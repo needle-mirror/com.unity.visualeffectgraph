@@ -768,7 +768,7 @@ namespace UnityEditor.VFX
 
         public bool CanLink(VFXSlot other)
         {
-            return direction != other.direction &&
+            return direction != other.direction && !m_LinkedSlots.Contains(other) &&
                 ((direction == Direction.kInput && CanConvertFrom(other.property.type)) || (other.CanConvertFrom(property.type)));
         }
 

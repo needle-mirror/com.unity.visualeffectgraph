@@ -325,6 +325,8 @@ namespace UnityEditor.VFX
                 case VFXValueType.Texture3D: return "VFXSampler3D";
                 case VFXValueType.TextureCube: return "VFXSamplerCube";
                 case VFXValueType.TextureCubeArray: return "VFXSamplerCubeArray";
+                case VFXValueType.Mesh: return "ByteAddressBuffer";
+
                 default:
                     return VFXExpression.TypeToCode(type);
             }

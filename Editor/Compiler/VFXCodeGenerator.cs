@@ -428,7 +428,7 @@ namespace UnityEditor.VFX
                 globalIncludeContent.WriteLine(additionnalHeader);
 
             foreach (var additionnalDefine in context.additionalDefines)
-                globalIncludeContent.WriteLineFormat("#define {0}{1}", additionnalDefine, additionnalDefine.Contains(' ') ? "" : " 1");
+                globalIncludeContent.WriteLineFormat("#define {0} 1", additionnalDefine);
 
             if (renderPipePasses != null)
                 globalIncludeContent.Write(GetFlattenedTemplateContent(renderPipePasses, new List<string>(), context.additionalDefines, dependencies));
