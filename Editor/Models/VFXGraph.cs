@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.VFX;
 using UnityEngine;
@@ -15,6 +16,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace UnityEditor.VFX
 {
+
     [InitializeOnLoad]
     class VFXGraphPreprocessor : AssetPostprocessor
     {
@@ -26,8 +28,11 @@ namespace UnityEditor.VFX
                 VisualEffectResource resource = VisualEffectResource.GetResourceAtPath(assetPath);
                 if (resource == null)
                     return;
-
-                resource.GetOrCreateGraph().SanitizeForImport();
+                VFXGraph graph = resource.graph as VFXGraph;
+                if (graph != null)
+                    graph.SanitizeForImport();
+                else
+                    Debug.LogError("VisualEffectGraphResource without graph");
             }
         }
         
@@ -36,9 +41,11 @@ namespace UnityEditor.VFX
             VisualEffectResource resource = VisualEffectResource.GetResourceAtPath(assetPath);
             if (resource != null)
             {
-                VFXGraph graph = resource.GetOrCreateGraph();
+                VFXGraph graph = resource.graph as VFXGraph;
                 if (graph != null)
-                    return graph.GetImportDependencies();
+                    return resource.GetOrCreateGraph().GetImportDependencies();
+                else
+                    Debug.LogError("VisualEffectGraphResource without graph");
             }
             return null;
         }
@@ -47,11 +54,11 @@ namespace UnityEditor.VFX
         {
             if (resource != null)
             {
-                VFXGraph graph = resource.GetOrCreateGraph();
+                VFXGraph graph = resource.graph as VFXGraph;
                 if (graph != null)
-                {
-                    graph.CompileForImport();
-                }
+                    resource.GetOrCreateGraph().CompileForImport();
+                else
+                    Debug.LogError("VisualEffectGraphResource without graph");
             }
         }
 
@@ -161,7 +168,7 @@ namespace UnityEditor.VFX
         }
     }
 
-    static class VisualEffectAssetExtensions
+    static class VisualEffectResourceExtensions
     {
         public static VFXGraph GetOrCreateGraph(this VisualEffectResource resource)
         {
@@ -193,8 +200,11 @@ namespace UnityEditor.VFX
         {
             resource.GetOrCreateGraph().UpdateSubAssets();
         }
+    }
 
-        public static VisualEffectResource GetResource<T>(this T asset) where T : VisualEffectObject
+    static class VisualEffectObjectExtensions
+    {
+        public static VisualEffectResource GetOrCreateResource(this VisualEffectObject asset)
         {
             string assetPath = AssetDatabase.GetAssetPath(asset);
             VisualEffectResource resource = VisualEffectResource.GetResourceAtPath(assetPath);
@@ -206,6 +216,17 @@ namespace UnityEditor.VFX
             }
             return resource;
         }
+
+        public static VisualEffectResource GetResource(this VisualEffectObject asset)
+        {
+            string assetPath = AssetDatabase.GetAssetPath(asset);
+            VisualEffectResource resource = VisualEffectResource.GetResourceAtPath(assetPath);
+
+            if (resource == null && !string.IsNullOrEmpty(assetPath))
+                throw new NullReferenceException($"VFX resource does not exist for this asset at path: {assetPath}");
+
+            return resource;
+        }
     }
 
     class VFXGraph : VFXModel
@@ -215,7 +236,11 @@ namespace UnityEditor.VFX
         // 2: Change some SetAttribute to spaceable slot
         // 3: Remove Masked from blendMode in Outputs and split feature to UseAlphaClipping
         // 4: TransformVector|Position|Direction & DistanceToSphere|Plane|Line have now spaceable outputs
-        public static readonly int CurrentVersion = 4;
+        // 5: Harmonized position blocks composition: PositionAABox was the only one with Overwrite position
+        // 6: Remove automatic strip orientation from quad strip context
+        public static readonly int CurrentVersion = 6;
+
+        public readonly VFXErrorManager errorManager = new VFXErrorManager();
 
 
         public override void OnEnable()
@@ -280,11 +305,7 @@ namespace UnityEditor.VFX
             dependencies.Add(this);
             CollectDependencies(dependencies);
 
-            // This is a guard where dependencies that couldnt be deserialized (because script is missing for instance) are removed from the list
-            // because else StoreObjectsToByteArray is crashing
-            // TODO Fix that
-            var safeDependencies = dependencies.Where(o => o != null);
-            var result = VFXMemorySerializer.StoreObjectsToByteArray(safeDependencies.ToArray(), CompressionLevel.Fastest);
+            var result = VFXMemorySerializer.StoreObjectsToByteArray(dependencies.ToArray(), CompressionLevel.Fastest);
 
             Profiler.EndSample();
 
@@ -366,8 +387,46 @@ namespace UnityEditor.VFX
 
             systemNames.Sync(this);
 
+
+            int resourceCurrentVersion = 0;
+            // Stop using reflection after 2020.2;
+            FieldInfo info = typeof(VisualEffectResource).GetField("CurrentVersion", BindingFlags.Static | System.Reflection.BindingFlags.Public);
+            if (info != null)
+                resourceCurrentVersion = (int)info.GetValue(null);
+
+            if (m_ResourceVersion < resourceCurrentVersion) // Graph not up to date
+            {
+                if (m_ResourceVersion < 1) // Version before gradient interpreted as linear
+                {
+                    foreach (var model in objs.OfType<VFXSlotGradient>())
+                    {
+                        Gradient value = (Gradient)model.value;
+                        GradientColorKey[] keys = value.colorKeys;
+
+                        for (int i = 0; i < keys.Length; ++i)
+                        {
+                            var colorKey = keys[i];
+                            colorKey.color = colorKey.color.linear;
+                            keys[i] = colorKey;
+                        }
+                        value.colorKeys = keys;
+                        model.value = new Gradient();
+                        model.value = value;
+                    }
+                }
+            }
+            m_ResourceVersion = resourceCurrentVersion;
             m_GraphSanitized = true;
             m_GraphVersion = CurrentVersion;
+
+#if !CASE_1289829_HAS_BEEN_FIXED
+            if (visualEffectResource != null && (visualEffectResource.updateMode & VFXUpdateMode.ExactFixedTimeStep) == VFXUpdateMode.ExactFixedTimeStep)
+            {
+                visualEffectResource.updateMode = visualEffectResource.updateMode & ~VFXUpdateMode.ExactFixedTimeStep;
+                Debug.Log("Sanitize : Exact Fixed Time has been automatically reset to false to avoid an unexpected behavior.");
+            }
+#endif
+
             UpdateSubAssets(); //Should not be necessary : force remove no more referenced object from asset
         }
 
@@ -437,12 +496,13 @@ namespace UnityEditor.VFX
 
             if (cause != VFXModel.InvalidationCause.kExpressionInvalidated &&
                 cause != VFXModel.InvalidationCause.kExpressionGraphChanged &&
-                cause != VFXModel.InvalidationCause.kUIChangedTransient)
+                cause != VFXModel.InvalidationCause.kUIChangedTransient &&
+                (model.hideFlags & HideFlags.DontSave) == 0)
             {
                 EditorUtility.SetDirty(this);
             }
 
-            if (cause == VFXModel.InvalidationCause.kExpressionGraphChanged || cause == VFXModel.InvalidationCause.kConnectionChanged)
+            if (cause == VFXModel.InvalidationCause.kExpressionGraphChanged)
             {
                 m_ExpressionGraphDirty = true;
                 m_DependentDirty = true;
@@ -489,10 +549,10 @@ namespace UnityEditor.VFX
             return m_ExpressionGraphDirty;
         }
 
-        public void SetExpressionGraphDirty()
+        public void SetExpressionGraphDirty(bool dirty = true)
         {
-            m_ExpressionGraphDirty = true;
-            m_DependentDirty = true;
+            m_ExpressionGraphDirty = dirty;
+            m_DependentDirty = dirty;
         }
 
         public void SetExpressionValueDirty()
@@ -585,10 +645,18 @@ namespace UnityEditor.VFX
                 }
                 else if (child is VFXSubgraphOperator operatorChild)
                 {
-                    operatorChild.ResyncSlots(false);
-                    operatorChild.UpdateOutputExpressions();
+                    operatorChild.RecreateCopy();
+                    if (operatorChild.ResyncSlots(true))
+                        operatorChild.UpdateOutputExpressions();
                 }
             }
+        }
+
+        private void SetFlattenedParentToSubblocks( )
+        {
+            foreach (var child in children.OfType<VFXContext>())
+                foreach (var block in child.children.OfType<VFXSubgraphBlock>())
+                    block.SetSubblocksFlattenedParent();
         }
 
         void RecurseSubgraphPatchInputExpression(IEnumerable<VFXModel> children)
@@ -653,6 +721,7 @@ namespace UnityEditor.VFX
         {
             Profiler.BeginSample("PrepareSubgraphs");
             RecurseSubgraphRecreateCopy(children);
+            SetFlattenedParentToSubblocks();
             RecurseSubgraphPatchInputExpression(children);
             Profiler.EndSample();
         }
@@ -726,6 +795,8 @@ namespace UnityEditor.VFX
             m_ExpressionValuesDirty = false;
         }
 
+        public static VFXCompileErrorReporter compileReporter = null;
+
         public void RecompileIfNeeded(bool preventRecompilation = false, bool preventDependencyRecompilation = false)
         {
             SanitizeGraph();
@@ -739,6 +810,7 @@ namespace UnityEditor.VFX
                     PrepareSubgraphs();
 
                     compiledData.Compile(m_CompilationMode, m_ForceShaderValidation);
+
                 }
                 else if (m_ExpressionValuesDirty && !m_ExpressionGraphDirty)
                 {
@@ -779,6 +851,9 @@ namespace UnityEditor.VFX
 
         [SerializeField]
         private int m_GraphVersion = CurrentVersion;
+
+        [SerializeField]
+        private int m_ResourceVersion;
 
         [NonSerialized]
         private bool m_GraphSanitized = false;
@@ -836,5 +911,6 @@ namespace UnityEditor.VFX
         }
 
         private VisualEffectResource m_Owner;
+
     }
 }

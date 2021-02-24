@@ -33,13 +33,15 @@ namespace UnityEditor.VFX
 
         public static VFXPropertyWithValue GetPropertyFromInputParameter(VFXParameter param)
         {
-            List<VFXPropertyAttribute> attributes = new List<VFXPropertyAttribute>();
+            List<object> attributes = new List<object>();
             if (!string.IsNullOrEmpty(param.tooltip))
-                attributes.Add(new VFXPropertyAttribute(VFXPropertyAttribute.Type.kTooltip, param.tooltip));
-
-            if (param.hasRange)
-                attributes.Add(new VFXPropertyAttribute(VFXPropertyAttribute.Type.kRange, (float)VFXConverter.ConvertTo(param.m_Min.Get(), typeof(float)), (float)VFXConverter.ConvertTo(param.m_Max.Get(), typeof(float))));
-
+                attributes.Add(new TooltipAttribute(param.tooltip));
+            
+            if (param.valueFilter == VFXValueFilter.Range)
+                attributes.Add(new RangeAttribute((float)VFXConverter.ConvertTo(param.min, typeof(float)), (float)VFXConverter.ConvertTo(param.max, typeof(float))));
+            else if( param.valueFilter == VFXValueFilter.Enum)
+                attributes.Add(new EnumAttribute(param.enumValues.ToArray()));
+            
             return new VFXPropertyWithValue(new VFXProperty(param.type, param.exposedName, attributes.ToArray()), param.value);
         }
 
@@ -58,7 +60,7 @@ namespace UnityEditor.VFX
             return models.OfType<VFXParameter>().Where(t => predicate(t)).OrderBy(t => t.order);
         }
     }
-    [VFXInfo(category = "Subgraph Operator")]
+    [VFXInfo]
     class VFXSubgraphOperator : VFXOperator
     {
         [VFXSetting(VFXSettingAttribute.VisibleFlags.InInspector), SerializeField]
@@ -66,7 +68,20 @@ namespace UnityEditor.VFX
 
         public VisualEffectSubgraphOperator subgraph
         {
-            get { return m_Subgraph; }
+            get
+            {
+                if (m_Subgraph == null && !object.ReferenceEquals(m_Subgraph, null))
+                {
+                    string assetPath = AssetDatabase.GetAssetPath(m_Subgraph.GetInstanceID());
+
+                    var newSubgraph = AssetDatabase.LoadAssetAtPath<VisualEffectSubgraphOperator>(assetPath);
+                    if (newSubgraph != null)
+                    {
+                        m_Subgraph = newSubgraph;
+                    }
+                }
+                return m_Subgraph;
+            }
         }
         VFXGraph m_UsedSubgraph;
         [NonSerialized]
@@ -95,7 +110,7 @@ namespace UnityEditor.VFX
             var copy = VFXMemorySerializer.DuplicateObjects(dependencies.ToArray());
             m_UsedSubgraph = graph;
             m_SubChildren = copy.OfType<VFXModel>().Where(t => t is VFXOperator || t is VFXParameter).ToArray();
-
+            
             foreach (var child in copy)
             {
                 child.hideFlags = HideFlags.HideAndDontSave;
@@ -117,7 +132,7 @@ namespace UnityEditor.VFX
             }
         }
 
-        public sealed override string name { get { return m_Subgraph != null ? m_Subgraph.name : "Empty Subgraph Operator"; } }
+        public sealed override string name { get { return m_Subgraph != null ? ObjectNames.NicifyVariableName(m_Subgraph.name) : "Empty Subgraph Operator"; } }
 
         protected override IEnumerable<VFXPropertyWithValue> inputProperties
         {
@@ -138,11 +153,17 @@ namespace UnityEditor.VFX
                 foreach (var param in GetParameters(t => VFXSubgraphUtility.OutputPredicate(t)).OrderBy(t => t.order))
                 {
                     if (!string.IsNullOrEmpty(param.tooltip))
-                        yield return new VFXPropertyWithValue(new VFXProperty(param.type, param.exposedName, new VFXPropertyAttribute(VFXPropertyAttribute.Type.kTooltip, param.tooltip)));
+                        yield return new VFXPropertyWithValue(new VFXProperty(param.type, param.exposedName, new TooltipAttribute(param.tooltip)));
                     else
                         yield return new VFXPropertyWithValue(new VFXProperty(param.type, param.exposedName));
                 }
             }
+        }
+        public override void GetImportDependentAssets(HashSet<int> dependencies)
+        {
+            base.GetImportDependentAssets(dependencies);
+            if (!object.ReferenceEquals(m_Subgraph, null))
+                dependencies.Add(m_Subgraph.GetInstanceID());
         }
 
         protected internal override void Invalidate(VFXModel model, InvalidationCause cause)
@@ -156,7 +177,8 @@ namespace UnityEditor.VFX
                     var otherGraph = m_Subgraph.GetResource().GetOrCreateGraph();
                     if (otherGraph == graph || otherGraph.subgraphDependencies.Contains(graph.GetResource().visualEffectObject))
                         m_Subgraph = null; // prevent cyclic dependencies.
-                    if (graph.GetResource().isSubgraph) // BuildSubgraphDependenciesis called for vfx by recompilation, but in subgraph we must call it explicitely
+
+                    if (graph.GetResource().isSubgraph) // BuildSubgraphDependencies is called for vfx by recompilation, but in subgraph we must call it explicitely
                         graph.BuildSubgraphDependencies();
 
                     RecreateCopy();
@@ -168,10 +190,12 @@ namespace UnityEditor.VFX
 
         IEnumerable<VFXParameter> GetParameters(Func<VFXParameter, bool> predicate)
         {
+            if (m_Subgraph == null && !object.ReferenceEquals(m_Subgraph, null))
+                m_Subgraph = EditorUtility.InstanceIDToObject(m_Subgraph.GetInstanceID()) as VisualEffectSubgraphOperator;
             if (m_Subgraph == null)
                 return Enumerable.Empty<VFXParameter>();
-            VFXGraph graph = m_Subgraph.GetResource().GetOrCreateGraph();
-            return VFXSubgraphUtility.GetParameters(graph.children, predicate);
+            VFXGraph graph = subgraph.GetResource().GetOrCreateGraph();
+            return VFXSubgraphUtility.GetParameters(m_SubChildren, predicate);
         }
 
         public override void CollectDependencies(HashSet<ScriptableObject> objs, bool ownedOnly = true)
@@ -184,9 +208,17 @@ namespace UnityEditor.VFX
             m_Subgraph.GetResource().GetOrCreateGraph().CollectDependencies(objs, false);
         }
 
+        public override void CheckGraphBeforeImport()
+        {
+            base.CheckGraphBeforeImport();
+            // If the graph is reimported it can be because one of its depedency such as the subgraphs, has been changed.
+
+            ResyncSlots(true);
+        }
+
         protected override VFXExpression[] BuildExpression(VFXExpression[] inputExpression)
         {
-            if (m_Subgraph == null)
+            if (subgraph == null)
                 return new VFXExpression[0];
 
             if (m_SubChildren == null)

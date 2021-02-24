@@ -703,11 +703,11 @@ namespace UnityEditor.VFX
                 owner.Invalidate(this, cause);
         }
 
-        public void UpdateAttributes(VFXPropertyAttribute[] attributes,bool notify)
+        public void UpdateAttributes(VFXPropertyAttributes attributes,bool notify)
         {
             if (notify)
             {
-                if (!VFXPropertyAttribute.IsEqual(m_Property.attributes, attributes))
+                if (!m_Property.attributes.IsEqual(attributes))
                 {
                     m_Property.attributes = attributes;
                     Invalidate(InvalidationCause.kUIChangedTransient); // TODO This will trigger a setDirty while it shouldn't as property attributes are not serialized
@@ -988,7 +988,7 @@ namespace UnityEditor.VFX
 
         public void SetOutExpression(VFXExpression exp, HashSet<VFXSlot> toInvalidate, VFXCoordinateSpace convertToSpace = (VFXCoordinateSpace)int.MaxValue)
         {
-            exp = VFXPropertyAttribute.ApplyToExpressionGraph(m_Property.attributes, exp);
+            exp = m_Property.attributes.ApplyToExpressionGraph(exp);
             if (convertToSpace != (VFXCoordinateSpace)int.MaxValue)
             {
                 exp = ConvertSpace(exp, this, convertToSpace);

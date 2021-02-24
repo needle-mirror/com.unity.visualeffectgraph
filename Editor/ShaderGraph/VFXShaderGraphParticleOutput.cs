@@ -63,7 +63,7 @@ namespace UnityEditor.VFX
                     return null;
                 case PropertyType.Boolean:
                     return typeof(bool);
-                case PropertyType.Vector1:
+                case PropertyType.Float:
                     return typeof(float);
                 case PropertyType.Vector2:
                     return typeof(Vector2);
@@ -177,13 +177,13 @@ namespace UnityEditor.VFX
                              .Select(t => new { property = t, type = GetSGPropertyType(t) })
                              .Where(t => t.type != null))
                     {
-                        if (property.property.propertyType == PropertyType.Vector1)
+                        if (property.property.propertyType == PropertyType.Float)
                         {
                             var prop = property.property as Vector1ShaderProperty;
                             if (prop != null)
                             {
                                 if (prop.floatType == FloatType.Slider)
-                                    shaderGraphProperties.Add(new VFXPropertyWithValue(new VFXProperty(property.type, property.property.referenceName, new VFXPropertyAttribute(VFXPropertyAttribute.Type.kRange, prop.rangeValues.x, prop.rangeValues.y)), GetSGPropertyValue(property.property)));
+                                    shaderGraphProperties.Add(new VFXPropertyWithValue(new VFXProperty(property.type, property.property.referenceName, new RangeAttribute(prop.rangeValues.x, prop.rangeValues.y)), GetSGPropertyValue(property.property)));
                                 else if (prop.floatType == FloatType.Integer)
                                     shaderGraphProperties.Add(new VFXPropertyWithValue(new VFXProperty(typeof(int), property.property.referenceName), VFXConverter.ConvertTo(GetSGPropertyValue(property.property), typeof(int))));
                                 else
@@ -236,7 +236,7 @@ namespace UnityEditor.VFX
         {
             passInfos = new Dictionary<string, PassInfo>()
             {
-                { "Forward", new PassInfo()  { vertexPorts = new int[] {}, pixelPorts = new int[] { ShaderGraphVfxAsset.ColorSlotId, ShaderGraphVfxAsset.AlphaSlotId, ShaderGraphVfxAsset.AlphaThresholdSlotId } } },
+                { "Forward", new PassInfo()  { vertexPorts = new int[] {}, pixelPorts = new int[] { ShaderGraphVfxAsset.ColorSlotId, ShaderGraphVfxAsset.EmissiveSlotId, ShaderGraphVfxAsset.AlphaSlotId, ShaderGraphVfxAsset.AlphaThresholdSlotId } } },
                 { "DepthOnly", new PassInfo()  { vertexPorts = new int[] {}, pixelPorts = new int[] { ShaderGraphVfxAsset.AlphaSlotId, ShaderGraphVfxAsset.AlphaThresholdSlotId } } }
             }
         };
@@ -246,7 +246,7 @@ namespace UnityEditor.VFX
             {
                 { "GBuffer", new PassInfo()  { vertexPorts = new int[] {}, pixelPorts = new int[] { ShaderGraphVfxAsset.BaseColorSlotId, ShaderGraphVfxAsset.AlphaSlotId, ShaderGraphVfxAsset.MetallicSlotId, ShaderGraphVfxAsset.SmoothnessSlotId, ShaderGraphVfxAsset.EmissiveSlotId, ShaderGraphVfxAsset.NormalSlotId, ShaderGraphVfxAsset.AlphaThresholdSlotId } } },
                 { "Forward", new PassInfo()  { vertexPorts = new int[] {}, pixelPorts = new int[] { ShaderGraphVfxAsset.BaseColorSlotId, ShaderGraphVfxAsset.AlphaSlotId, ShaderGraphVfxAsset.MetallicSlotId, ShaderGraphVfxAsset.SmoothnessSlotId, ShaderGraphVfxAsset.EmissiveSlotId, ShaderGraphVfxAsset.NormalSlotId, ShaderGraphVfxAsset.AlphaThresholdSlotId } } },
-                { "DepthOnly", new PassInfo()  { vertexPorts = new int[] {}, pixelPorts = new int[] { ShaderGraphVfxAsset.AlphaSlotId, ShaderGraphVfxAsset.AlphaThresholdSlotId, ShaderGraphVfxAsset.NormalSlotId } } }
+                { "DepthOnly", new PassInfo()  { vertexPorts = new int[] {}, pixelPorts = new int[] { ShaderGraphVfxAsset.AlphaSlotId, ShaderGraphVfxAsset.AlphaThresholdSlotId } } }
             }
         };
 
@@ -341,24 +341,25 @@ namespace UnityEditor.VFX
                     RefreshShaderGraphObject();
                     if (shaderGraph != null)
                     {
-                        foreach (var tex in shaderGraph.textureInfos.Where(t => t.texture != null).OrderBy(t => t.name))
+                        foreach (var tex in shaderGraph.textureInfos)
                         {
-                            switch (tex.texture.dimension)
+                            switch (tex.dimension)
                             {
+                                default:
                                 case TextureDimension.Tex2D:
-                                    mapper.AddExpression(new VFXTexture2DValue(tex.texture.GetInstanceID(), VFXValue.Mode.Variable), tex.name, -1);
+                                    mapper.AddExpression(new VFXTexture2DValue(tex.instanceID, VFXValue.Mode.Variable), tex.name, -1);
                                     break;
                                 case TextureDimension.Tex3D:
-                                    mapper.AddExpression(new VFXTexture3DValue(tex.texture.GetInstanceID(), VFXValue.Mode.Variable), tex.name, -1);
+                                    mapper.AddExpression(new VFXTexture3DValue(tex.instanceID, VFXValue.Mode.Variable), tex.name, -1);
                                     break;
                                 case TextureDimension.Cube:
-                                    mapper.AddExpression(new VFXTextureCubeValue(tex.texture.GetInstanceID(), VFXValue.Mode.Variable), tex.name, -1);
+                                    mapper.AddExpression(new VFXTextureCubeValue(tex.instanceID, VFXValue.Mode.Variable), tex.name, -1);
                                     break;
                                 case TextureDimension.Tex2DArray:
-                                    mapper.AddExpression(new VFXTexture2DArrayValue(tex.texture.GetInstanceID(), VFXValue.Mode.Variable), tex.name, -1);
+                                    mapper.AddExpression(new VFXTexture2DArrayValue(tex.instanceID, VFXValue.Mode.Variable), tex.name, -1);
                                     break;
                                 case TextureDimension.CubeArray:
-                                    mapper.AddExpression(new VFXTextureCubeArrayValue(tex.texture.GetInstanceID(), VFXValue.Mode.Variable), tex.name, -1);
+                                    mapper.AddExpression(new VFXTextureCubeArrayValue(tex.instanceID, VFXValue.Mode.Variable), tex.name, -1);
                                     break;
                             }
                         }
@@ -566,7 +567,7 @@ namespace UnityEditor.VFX
                         callSG.builder.Append($"\n{shaderGraph.outputStructName} OUTSG = {shaderGraph.evaluationFunctionName}(INSG");
 
                         if (graphCode.properties.Any())
-                            callSG.builder.Append("," + graphCode.properties.Select(t => IsTexture(t.propertyType) ? (t.propertyType == PropertyType.Texture2D ? $"{t.referenceName}, sampler{t.referenceName}, {t.referenceName}_TexelSize" : $"{t.referenceName}, sampler{t.referenceName}") : t.referenceName).Aggregate((s, t) => s + ", " + t));
+                            callSG.builder.Append("," + graphCode.properties.Select(t => t.GetHLSLVariableName(true)).Aggregate((s, t) => s + ", " + t));
 
                         callSG.builder.AppendLine(");");
 
@@ -575,7 +576,7 @@ namespace UnityEditor.VFX
                         {
                             callSG.builder.AppendLine(
 @"#if (USE_ALPHA_TEST || WRITE_MOTION_VECTOR_IN_FORWARD) && defined(VFX_VARYING_ALPHATHRESHOLD)
-i.VFX_VARYING_ALPHATHRESHOLD = OUTSG.AlphaThreshold_7;
+i.VFX_VARYING_ALPHATHRESHOLD = OUTSG.AlphaClipThreshold_7;
 #endif");
                         }
 

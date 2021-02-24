@@ -189,6 +189,9 @@ namespace  UnityEditor.VFX.UI
 #if USE_EXIT_WORKAROUND_FOGBUGZ_1062258
             EditorApplication.wantsToQuit += Quitting_Workaround;
 #endif
+
+            var icon = AssetDatabase.LoadAssetAtPath<Texture2D>(VisualEffectGraphPackageInfo.assetPackagePath + "/Editor Default Resources/VFX/" + (EditorGUIUtility.isProSkin ? "vfx_graph_icon_gray_dark.png" : "vfx_graph_icon_gray_light.png"));
+            titleContent.image = icon;
         }
 
 #if USE_EXIT_WORKAROUND_FOGBUGZ_1062258
@@ -229,7 +232,7 @@ namespace  UnityEditor.VFX.UI
         void OnFocus()
         {
             if (graphView != null) // OnFocus can be somehow called before OnEnable
-                graphView.OnFocus();
+            graphView.OnFocus();
         }
 
         public bool autoCompile {get; set; }
@@ -262,22 +265,39 @@ namespace  UnityEditor.VFX.UI
                         }
                         if (autoCompile && graph.IsExpressionGraphDirty() && !graph.GetResource().isSubgraph)
                         {
+
                             VFXGraph.explicitCompile = true;
-                            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(graphView.controller.model));
+                            graph.errorManager.ClearAllErrors(null, VFXErrorOrigin.Compilation);
+                            using (var reporter = new VFXCompileErrorReporter(controller.graph.errorManager))
+                            {
+                                VFXGraph.compileReporter = reporter;
+                                AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(graphView.controller.model));
+                                VFXGraph.compileReporter = null;
+                            }
                             VFXGraph.explicitCompile = false;
+                        
                         }
                         else
                             graph.RecompileIfNeeded(true, true);
 
+                        bool wasDirty = graph.IsExpressionGraphDirty();
+
                         controller.RecompileExpressionGraphIfNeeded();
+
+                        // Hack to avoid infinite recompilation due to UI triggering a recompile TODO: Fix problematic cases that trigger that error
+                        if (!wasDirty && graph.IsExpressionGraphDirty())
+                        {
+                            Debug.LogError("Expression graph was marked as dirty after compiling context for UI. Discard to avoid infinite compilation loop.");
+                            graph.SetExpressionGraphDirty(false);
+                        }
                     }
                 }
             }
 
-            if (VFXViewModicationProcessor.assetMoved)
+            if (VFXViewModificationProcessor.assetMoved)
             {
                 graphView.AssetMoved();
-                VFXViewModicationProcessor.assetMoved = false;
+                VFXViewModificationProcessor.assetMoved = false;
             }
             titleContent.text = filename;
 

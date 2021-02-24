@@ -49,6 +49,11 @@ namespace UnityEditor.VFX
             shader = ((VFXDataMesh)GetData()).shader;
         }
 
+        public override VFXCoordinateSpace GetOutputSpaceFromSlot(VFXSlot slot)
+        {
+            return VFXCoordinateSpace.Local;
+        }
+
         public override bool SetupCompilation()
         {
             shader = ((VFXDataMesh)GetData()).shader;
@@ -85,7 +90,7 @@ namespace UnityEditor.VFX
             {
                 yield return new VFXPropertyWithValue(new VFXProperty(typeof(Mesh), "mesh"), VFXResources.defaultResources.mesh);
                 yield return new VFXPropertyWithValue(new VFXProperty(typeof(Transform), "transform"), Transform.defaultValue);
-                yield return new VFXPropertyWithValue(new VFXProperty(typeof(uint), "subMeshMask", new VFXPropertyAttribute(VFXPropertyAttribute.Type.kBitField)), uint.MaxValue);
+                yield return new VFXPropertyWithValue(new VFXProperty(typeof(uint), "subMeshMask", new BitFieldAttribute()), uint.MaxValue);
 
 
                 if (GetData() != null)
@@ -162,7 +167,7 @@ namespace UnityEditor.VFX
                             if (propertyType != null)
                             {
                                 propertyAttribs.Add(new TooltipAttribute(ShaderUtil.GetPropertyDescription(copyShader, i)));
-                                yield return new VFXPropertyWithValue(new VFXProperty(propertyType, propertyName, VFXPropertyAttribute.Create(propertyAttribs.ToArray())), propertyValue);
+                                yield return new VFXPropertyWithValue(new VFXProperty(propertyType, propertyName, propertyAttribs.ToArray()), propertyValue);
                             }
                         }
                     }
@@ -260,7 +265,7 @@ namespace UnityEditor.VFX
         {
             base.CheckGraphBeforeImport();
             // If the graph is reimported it can be because one of its depedency such as the shadergraphs, has been changed.
-
+            ((VFXDataMesh)GetData()).RefreshShader(); // TODO This triggers an invalidate that is theorically not needed but require to fix a bug with shader graph dependency
             ResyncSlots(true);
 
             Invalidate(InvalidationCause.kUIChangedTransient);
