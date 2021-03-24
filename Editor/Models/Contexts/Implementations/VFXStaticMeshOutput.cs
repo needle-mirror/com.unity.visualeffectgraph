@@ -92,6 +92,7 @@ namespace UnityEditor.VFX
                 yield return new VFXPropertyWithValue(new VFXProperty(typeof(Transform), "transform"), Transform.defaultValue);
                 yield return new VFXPropertyWithValue(new VFXProperty(typeof(uint), "subMeshMask", new BitFieldAttribute()), uint.MaxValue);
 
+
                 if (GetData() != null)
                 {
                     Shader copyShader = ((VFXDataMesh)GetData()).shader;
@@ -257,7 +258,6 @@ namespace UnityEditor.VFX
             get
             {
                 yield return new VFXMapping("sortPriority", sortPriority);
-                yield return new VFXMapping("castShadows", castShadows ? 1 : 0);
             }
         }
 
@@ -265,8 +265,8 @@ namespace UnityEditor.VFX
         {
             base.CheckGraphBeforeImport();
             // If the graph is reimported it can be because one of its depedency such as the shadergraphs, has been changed.
-            if (!VFXGraph.explicitCompile)
-                ResyncSlots(true);
+            ((VFXDataMesh)GetData()).RefreshShader(); // TODO This triggers an invalidate that is theorically not needed but require to fix a bug with shader graph dependency
+            ResyncSlots(true);
 
             Invalidate(InvalidationCause.kUIChangedTransient);
         }

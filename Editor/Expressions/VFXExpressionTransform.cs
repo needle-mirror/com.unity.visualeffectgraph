@@ -134,19 +134,19 @@ namespace UnityEditor.VFX
             // Calculate the determinant of upper left 3x3 sub-matrix and
             // determine if the matrix is singular.
             pos = neg = 0.0f;
-            t = input[0, 0] * input[1, 1] * input[2, 2];
+            t =  input[0, 0] * input[1, 1] * input[2, 2];
             if (t >= 0.0f)
                 pos += t;
             else
                 neg += t;
 
-            t = input[1, 0] * input[2, 1] * input[0, 2];
+            t =  input[1, 0] * input[2, 1] * input[0, 2];
             if (t >= 0.0f)
                 pos += t;
             else
                 neg += t;
 
-            t = input[2, 0] * input[0, 1] * input[1, 2];
+            t =  input[2, 0] * input[0, 1] * input[1, 2];
             if (t >= 0.0f)
                 pos += t;
             else

@@ -247,12 +247,8 @@ namespace UnityEditor.VFX.UI
             set
             {
                 if (m_ComponentBoard.parent == null)
-                    m_ToggleComponentBoard.value = true;
-
-                if (value == null)
-                    m_ComponentBoard.Detach();
-                else
-                    m_ComponentBoard.Attach(value);
+                    ToggleComponentBoard();
+                m_ComponentBoard.Attach(value);
             }
         }
 
@@ -492,7 +488,7 @@ namespace UnityEditor.VFX.UI
 
             // End Toolbar
 
-            m_NoAssetLabel = new Label("\n\n\nTo begin creating Visual Effects, create a new Visual Effect Graph Asset.\n(or double-click an existing Visual Effect Graph in the project view)") { name = "no-asset" };
+            m_NoAssetLabel = new Label("\n\n\nTo begin creating Visual Effects, create a new Visual Effect Graph Asset.\n(or double-click an existing Visual Effect Graph in the project view)") { name = "no-asset"};
             m_NoAssetLabel.style.position = PositionType.Absolute;
             m_NoAssetLabel.style.left = new StyleLength(40f);
             m_NoAssetLabel.style.right = new StyleLength(40f);
@@ -803,11 +799,6 @@ namespace UnityEditor.VFX.UI
             ToggleComponentBoard();
         }
 
-        public void OnVisualEffectComponentChanged(IEnumerable<VisualEffect> visualEffects)
-        {
-            m_ComponentBoard.OnVisualEffectComponentChanged(visualEffects);
-        }
-
         void Delete(string cmd, AskUser askUser)
         {
             var selection = this.selection.ToArray();
@@ -910,7 +901,7 @@ namespace UnityEditor.VFX.UI
 
         public bool IsAssetEditable()
         {
-            return controller.model != null && controller.model.IsAssetEditable();
+            return controller.model.IsAssetEditable();
         }
 
         void NewControllerSet()
@@ -1428,13 +1419,14 @@ namespace UnityEditor.VFX.UI
 
         void OnSave()
         {
+            OnCompile();
             var graphToSave = new HashSet<VFXGraph>();
             GetGraphsRecursively(controller.graph, graphToSave);
 
             foreach (var graph in graphToSave)
             {
-                if (EditorUtility.IsDirty(graph) || UnityEngine.Object.ReferenceEquals(graph, controller.graph))
-                    graph.GetResource().WriteAsset();
+                graph.GetResource().WriteAsset();
+                graph.OnSaved();
             }
         }
 
@@ -1601,7 +1593,7 @@ namespace UnityEditor.VFX.UI
 
             if (startAnchor is VFXDataAnchor)
             {
-                var controllers = controller.GetCompatiblePorts((startAnchor as VFXDataAnchor).controller, nodeAdapter);
+                var controllers = controller.GetCompatiblePorts((startAnchor as  VFXDataAnchor).controller, nodeAdapter);
                 return controllers.Select(t => (Port)GetDataAnchorByController(t as VFXDataAnchorController)).ToList();
             }
             else
@@ -1973,7 +1965,7 @@ namespace UnityEditor.VFX.UI
 
         void CopyInputLinks(VFXNodeController sourceController, VFXNodeController targetController)
         {
-            foreach (var st in sourceController.inputPorts.Zip(targetController.inputPorts, (s, t) => new { source = s, target = t }))
+            foreach (var st in sourceController.inputPorts.Zip(targetController.inputPorts, (s, t) => new { source = s, target = t}))
             {
                 CopyInputLinks(st.source, st.target);
             }
@@ -2033,7 +2025,7 @@ namespace UnityEditor.VFX.UI
                 {
                     VFXContextUI topContext = flowEdge.output.GetFirstAncestorOfType<VFXContextUI>();
                     VFXContextUI bottomContext = flowEdge.input.GetFirstAncestorOfType<VFXContextUI>();
-                    if (contexts.Contains(topContext) && !contexts.Contains(bottomContext))
+                    if (contexts.Contains(topContext)  && !contexts.Contains(bottomContext))
                     {
                         float topContextBottom = topContext.layout.yMax;
                         float newTopContextBottom = topContext.layout.yMax + size;
@@ -2140,7 +2132,7 @@ namespace UnityEditor.VFX.UI
 
         void OnCreateNodeOnEdge(DropdownMenuAction e)
         {
-            VFXFilterWindow.Show(VFXViewWindow.currentWindow, e.eventInfo.mousePosition, ViewToScreenPosition(e.eventInfo.mousePosition), new VFXNodeProvider(controller, (d, v) => AddNodeOnEdge(d, v, e.userData as VFXDataEdgeController), null, new Type[] { typeof(VFXOperator) }));
+            VFXFilterWindow.Show(VFXViewWindow.currentWindow, e.eventInfo.mousePosition, ViewToScreenPosition(e.eventInfo.mousePosition), new VFXNodeProvider(controller, (d, v) => AddNodeOnEdge(d, v, e.userData as VFXDataEdgeController), null, new Type[] { typeof(VFXOperator)}));
         }
 
         void AddNodeOnEdge(VFXNodeProvider.Descriptor desc, Vector2 position, VFXDataEdgeController edge)
@@ -2243,7 +2235,7 @@ namespace UnityEditor.VFX.UI
             }
             if (evt.target is GraphView || evt.target is Node || evt.target is Group)
             {
-                evt.menu.AppendAction("Duplicate with edges", (a) => { DuplicateSelectionWithEdges(); },
+                evt.menu.AppendAction("Duplicate with edges" , (a) => { DuplicateSelectionWithEdges(); },
                     (a) => { return canDuplicateSelection ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled; });
                 evt.menu.AppendSeparator();
             }
@@ -2264,17 +2256,30 @@ namespace UnityEditor.VFX.UI
 
         public bool SelectionHasCompleteSystems()
         {
-            HashSet<VFXContextUI> selectedContexts = new HashSet<VFXContextUI>(selection.OfType<VFXContextUI>());
-            if (selectedContexts.Count() < 1)
+            HashSet<VFXContextUI> selectedContextUIs = new HashSet<VFXContextUI>(selection.OfType<VFXContextUI>());
+            if (selectedContextUIs.Count() < 1)
                 return false;
 
-            HashSet<VFXData> usedDatas = new HashSet<VFXData>(selectedContexts.Select(t => t.controller.model.GetData()).Where(t => t != null));
+            var relatedContext = selectedContextUIs.Select(t => t.controller.model);
 
+            //Adding manually VFXBasicGPUEvent, it doesn't appears as dependency.
+            var outputContextDataFromGPUEvent = relatedContext.OfType<VFXBasicGPUEvent>().SelectMany(o => o.outputContexts);
+            relatedContext = relatedContext.Concat(outputContextDataFromGPUEvent);
+            var selectedContextDatas = relatedContext.Select(o => o.GetData()).Where(o => o != null);
+
+            var selectedContextDependencies = selectedContextDatas.SelectMany(o => o.allDependenciesIncludingNotCompilable);
+            var allDatas = selectedContextDatas.Concat(selectedContextDependencies);
+
+            var allDatasHash = new HashSet<VFXData>(allDatas);
             foreach (var context in GetAllContexts())
             {
-                if (context.controller.model is VFXBlockSubgraphContext)
+                var model = context.controller.model;
+                if (model is VFXBlockSubgraphContext)
                     return false;
-                if (usedDatas.Contains(context.controller.model.GetData()) && !selectedContexts.Contains(context))
+
+                //We should exclude model.contextType == VFXContextType.Event of this condition.
+                //If VFXConvertSubgraph.TransferContextsFlowEdges has been fixed & renabled.
+                if (allDatasHash.Contains(model.GetData()) && !selectedContextUIs.Contains(context))
                     return false;
             }
 

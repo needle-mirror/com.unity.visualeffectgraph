@@ -17,9 +17,9 @@ namespace UnityEditor.VFX
             kOutput,
         }
 
-        public Direction direction { get { return m_Direction; } }
-        public VFXProperty property { get { return m_Property; } }
-        public override string name { get { return m_Property.name; } }
+        public Direction direction      { get { return m_Direction; } }
+        public VFXProperty property     { get { return m_Property; } }
+        public override string name     { get { return m_Property.name; } }
 
         private FieldInfo m_FieldInfoCache;
 
@@ -308,9 +308,9 @@ namespace UnityEditor.VFX
 
         public IVFXSlotContainer owner { get { return GetMasterData().m_Owner as IVFXSlotContainer; } }
 
-        public bool IsMasterSlot() { return m_MasterSlot == this; }
-        public VFXSlot GetMasterSlot() { return m_MasterSlot; }
-        private MasterData GetMasterData() { return GetMasterSlot().m_MasterData; }
+        public bool IsMasterSlot()          { return m_MasterSlot == this; }
+        public VFXSlot GetMasterSlot()      { return m_MasterSlot; }
+        private MasterData GetMasterData()  { return GetMasterSlot().m_MasterData; }
 
         // Never call this directly ! Called only by VFXSlotContainerModel
         public void SetOwner(VFXModel owner)
@@ -559,44 +559,48 @@ namespace UnityEditor.VFX
             if (!hierarchySane)
             {
                 Debug.LogWarningFormat("Slot {0} holding {1} didnt match the type layout. It is recreated and all links are lost.", property.name, property.type);
-
-                // Try to retrieve the value
-                object previousValue = null;
-                try
-                {
-                    previousValue = this.value;
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarningFormat("Exception while trying to retrieve value: {0}: {1}", e, e.StackTrace);
-                }
-
-                // Recreate the slot
-                var newSlot = Create(property, direction, previousValue);
-                if (IsMasterSlot())
-                {
-                    var owner = this.owner;
-                    if (owner != null)
-                    {
-                        int index = owner.GetSlotIndex(this);
-                        owner.RemoveSlot(this);
-                        owner.AddSlot(newSlot, index);
-                    }
-                }
-                else
-                {
-                    var parent = GetParent();
-                    var index = parent.GetIndex(this);
-                    parent.RemoveChild(this, false);
-                    parent.AddChild(newSlot, index);
-                }
-
-                CopyLinks(newSlot, this, true);
-                CopySpace(newSlot, this, true);
-                UnlinkAll(true);
-                return newSlot;
+                return Recreate();
             }
             return this;
+        }
+
+        public VFXSlot Recreate()
+        {
+            // Try to retrieve the value
+            object previousValue = null;
+            try
+            {
+                previousValue = this.value;
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarningFormat("Exception while trying to retrieve value: {0}: {1}", e, e.StackTrace);
+            }
+
+            // Recreate the slot
+            var newSlot = Create(property, direction, previousValue);
+            if (IsMasterSlot())
+            {
+                var owner = this.owner;
+                if (owner != null)
+                {
+                    int index = owner.GetSlotIndex(this);
+                    owner.RemoveSlot(this);
+                    owner.AddSlot(newSlot, index);
+                }
+            }
+            else
+            {
+                var parent = GetParent();
+                var index = parent.GetIndex(this);
+                parent.RemoveChild(this, false);
+                parent.AddChild(newSlot, index);
+            }
+
+            CopyLinks(newSlot, this, true);
+            CopySpace(newSlot, this, true);
+            UnlinkAll(true);
+            return newSlot;
         }
 
         private void SetDefaultExpressionValue()
@@ -935,8 +939,7 @@ namespace UnityEditor.VFX
             {
                 var inExpressionPatched = ApplySpaceConversion(startSlot.m_LinkedInExpression, startSlot, startSlot.m_LinkedInSlot);
                 startSlot.m_InExpression = startSlot.ConvertExpression(inExpressionPatched, startSlot.m_LinkedInSlot); // TODO Handle structural modification
-                startSlot.PropagateToChildren(s =>
-                {
+                startSlot.PropagateToChildren(s => {
                     var exp = s.ExpressionToChildren(s.m_InExpression);
                     for (int i = 0; i < s.GetNbChildren(); ++i)
                         s[i].m_InExpression = exp != null ? exp[i] : s.refSlot[i].GetExpression();     // Not sure about that
@@ -965,7 +968,7 @@ namespace UnityEditor.VFX
         {
             if (sourceSlot != null
                 && destSlot.spaceable && sourceSlot.spaceable
-                && destSlot.space != sourceSlot.space)
+                &&  destSlot.space != sourceSlot.space)
             {
                 var destSpaceableType = destSlot.GetSpaceTransformationType();
                 var sourceSpaceableType = sourceSlot.GetSpaceTransformationType();
@@ -1022,8 +1025,7 @@ namespace UnityEditor.VFX
         {
             var masterSlot = GetMasterSlot();
 
-            masterSlot.PropagateToChildren(s =>
-            {
+            masterSlot.PropagateToChildren(s => {
                 if (s.m_ExpressionTreeUpToDate)
                 {
                     s.m_ExpressionTreeUpToDate = false;
@@ -1121,7 +1123,7 @@ namespace UnityEditor.VFX
             return expression;
         }
 
-        protected virtual VFXExpression[] ExpressionToChildren(VFXExpression exp) { return null; }
+        protected virtual VFXExpression[] ExpressionToChildren(VFXExpression exp)   { return null; }
         protected virtual VFXExpression ExpressionFromChildren(VFXExpression[] exp) { return null; }
 
         public virtual VFXValue DefaultExpression(VFXValue.Mode mode)

@@ -7,7 +7,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace UnityEditor.VFX
 {
-#pragma warning disable 0659
+    #pragma warning disable 0659
     abstract class VFXValue : VFXExpression
     {
         public enum Mode
@@ -42,6 +42,11 @@ namespace UnityEditor.VFX
         static public VFXValue<int> Constant(CubemapArray value)
         {
             return new VFXTextureCubeArrayValue(value.GetInstanceID(), Mode.Constant);
+        }
+
+        static public VFXValue<int> Constant(CameraBuffer value)
+        {
+            return new VFXCameraBufferValue(value, Mode.Constant);
         }
 
         static public VFXValue<T> Constant<T>(T value = default(T))

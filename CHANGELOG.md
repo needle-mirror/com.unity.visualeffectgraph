@@ -4,20 +4,46 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [12.0.0] - 2021-01-11
+### Added
+- Added support for Texture2D Arrays in Flipbooks
+- Added new setting in "Preferences -> Visual Effects" to control the fallback behavior of camera buffers from MainCamera node when the main camera is not rendered.
+- Sample vertices of a transformed skinned mesh with Position (Skinned Mesh) and Sample Skinned Mesh operator.
+- Placement option (Vertex, Edge, Surface) in Sample Mesh & Skinned Mesh, allows triangle sampling.
+
+### Changed
+- Allow remaking an existing link.
+- Sphere and Cube outputs are now experimental
+
+### Fixed
+- VFXEventBinderBase throwing a null reference exception in runtime
+- Unexpected compilation warning in VFXMouseBinder [Case 1313003](https://issuetracker.unity3d.com/product/unity/issues/guid/1313003/)
+- Prevent creation of subgraph containing only partial systems [Case 1284053](https://issuetracker.unity3d.com/product/unity/issues/guid/1284053/)
+- Prevent pasting context within operator/block subgraph [Case 1235269](https://issuetracker.unity3d.com/product/unity/issues/guid/1235269/)
+- VFXEventBinderBase throwing a null reference exception in runtime
+- Fix CameraFade for shadow maps [Case 1294073](https://fogbugz.unity3d.com/f/cases/1294073/)
+- Modified Sign operator node output for float when input is 0.0f [Case 1299922](https://fogbugz.unity3d.com/f/cases/1299922/)
+- An existing link can be remade.
+- Use alphabetical order in type list in blackboard "+" button [Case 1304109](https://issuetracker.unity3d.com/product/unity/issues/guid/1304109/)
+- Consistently displays the Age Particles checkbox in Update context [Case 1221557](https://issuetracker.unity3d.com/product/unity/issues/guid/1221557/)
+- Fix compute culling compilation in URP [Case 1309174](https://fogbugz.unity3d.com/f/cases/1309174/)
+- pCache: Unexpected ditable field in Mesh Statistics, Save & Cancel pCache, error trying to access not readable texture [Case 1122417](https://issuetracker.unity3d.com/product/unity/issues/guid/1122417/)
+- Handle correctly locked VisualEffectAsset with version control system [Case 1261051](https://issuetracker.unity3d.com/product/unity/issues/guid/1261051/)
+- Artefact in VFXView using efficient debug mode in component target board [Case 1243947](https://issuetracker.unity3d.com/product/unity/issues/guid/1243947/)
+- Sample Mesh Color when value is stored as float.
+- Compilation error due to direct access to GetWorldToObjectMatrix instead of VFXGetWorldToObjectMatrix [Case 1308481](https://issuetracker.unity3d.com/product/unity/issues/guid/1308481/)
+- Prevent infinite compilation loop [Case 1298466](https://issuetracker.unity3d.com/product/unity/issues/guid/1298466/)
+- Remove some useless compilation triggers (modifying not connected or disabled nodes for instance)
+- Tidy up of platform abstraction code for random number generation, requires a dependency on com.unity.render-pipelines.core for those abstractions.
+- Fixed shader compilation errors with textures in shader graph [Case 1309219](https://issuetracker.unity3d.com/product/unity/issues/guid/1309219/)
+
 ## [11.0.0] - 2020-10-21
 ### Added
 - Added new setting to output nodes to exclude from TAA
 - New Sample Point cache & Sample Attribute map operators
-- Sample vertices of a transformed skinned mesh with Position (Skinned Mesh) and Sample Skinned Mesh operator.
-- Placement option (Vertex, Edge, Surface) in Sample Mesh & Skinned Mesh, allows triangle sampling.
-- Added support for Texture2D Arrays in Flipbooks
 
 ### Changed
 - Changed the "Edit" button so it becomes "New" when no asset is set on a Visual Effect component, in order to save a new visual effect graph asset.
-- Sphere and Cube outputs are now experimental
-- Property Binder : Handle Remove Component removing linked hidden scriptable objectfields
-- Property Binder : Prevent multiple VFXPropertyBinder within the same game object
-- Tidy up of platform abstraction code for random number generation, requires a dependency on com.unity.render-pipelines.core for those abstractions.
 
 ### Fixed
 - Forbid incorrect link between incompatible context [Case 1269756](https://issuetracker.unity3d.com/product/unity/issues/guid/1269756/)
@@ -28,40 +54,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fix [Case 1223747](https://fogbugz.unity3d.com/f/cases/1223747/)
 - Fix [Case 1290493](https://fogbugz.unity3d.com/f/cases/1290493/#BugEvent.1072735759)
 - Incorrect path on Linux while targetting Android, IOS or WebGL [Case 1279750](https://issuetracker.unity3d.com/product/unity/issues/guid/1279750/)
-- VFXEventBinderBase throwing a null reference exception in runtime
-- Unexpected compilation warning in VFXMouseBinder [Case 1313003](https://issuetracker.unity3d.com/product/unity/issues/guid/1313003/)
-- Sample Mesh Color when value is stored as float.
-- Prevent infinite compilation loop [Case 1298466](https://issuetracker.unity3d.com/product/unity/issues/guid/1298466/)
-- Remove some useless compilation triggers (modifying not connected or disabled nodes for instance)
-- Fixed issue with VFX using incorrect buffer type for strip data
-- Fixed shader compilation errors with textures in shader graph [Case 1309219](https://issuetracker.unity3d.com/product/unity/issues/guid/1309219/)
-- Modified Sign operator node output for float when input is 0.0f [Case 1299922](https://fogbugz.unity3d.com/f/cases/1299922/)
-- An existing link can be remade.
-- Use alphabetical order in type list in blackboard "+" button [Case 1304109](https://issuetracker.unity3d.com/product/unity/issues/guid/1304109/)
-- Consistently displays the Age Particles checkbox in Update context [Case 1221557](https://issuetracker.unity3d.com/product/unity/issues/guid/1221557/)
-- Fix compute culling compilation in URP [Case 1309174](https://fogbugz.unity3d.com/f/cases/1309174/)
-- pCache: Unexpected ditable field in Mesh Statistics, Save & Cancel pCache, error trying to access not readable texture [Case 1122417](https://issuetracker.unity3d.com/product/unity/issues/guid/1122417/)
-- Handle correctly locked VisualEffectAsset with version control system [Case 1261051](https://issuetracker.unity3d.com/product/unity/issues/guid/1261051/)
-- Artefact in VFXView using efficient debug mode in component target board [Case 1243947](https://issuetracker.unity3d.com/product/unity/issues/guid/1243947/)
-- Compilation error due to direct access to GetWorldToObjectMatrix instead of VFXGetWorldToObjectMatrix [Case 1308481](https://issuetracker.unity3d.com/product/unity/issues/guid/1308481/)
-- Safe Normalization of Cross Products in Orient blocks [Case 1272724](https://issuetracker.unity3d.com/product/unity/issues/guid/1272724)
-- Property Binder : Undo after reset [Case 1293794](https://issuetracker.unity3d.com/product/unity/issues/guid/1293794/)
-- Property Binder : Allow copy/past from a game object to another
-- Deleting a context node and a block while both are selected throws a null ref exception. [Case 315578](https://issuetracker.unity3d.com/product/unity/issues/guid/1315578/)
-- Target GameObject attach button does not allow attaching a valid VFX if the last selection was invalid. [Case 1312178](https://issuetracker.unity3d.com/product/unity/issues/guid/1312178/)
-- Deleting flow edge between Init and Update throw an invalid opeation exception [Case 1315593](https://issuetracker.unity3d.com/product/unity/issues/guid/1315593/)
-- Regression with some settings not always triggering a recompilation [Case 1322844](https://issuetracker.unity3d.com/product/unity/issues/guid/1322844/)
-- Having more than five GPU Event output leads to "unexpected token 'if" at compilation [Case 1323434](https://issuetracker.unity3d.com/product/unity/issues/guid/1323434/)
-- Deleted properties still show up in the inspector [Case 1320952](https://issuetracker.unity3d.com/product/unity/issues/guid/1320952/)
-- Exception in VFXFilterWindow if search field is empty [Case 1235269](https://issuetracker.unity3d.com/product/unity/issues/guid/1235269/)
-- Fixed null reference exception when exposing Camera type in VFX graph [Case 1315582](https://issuetracker.unity3d.com/product/unity/issues/guid/1315582/)
-- Fixed VFX with output mesh being always reimported [Case 1309753](https://issuetracker.unity3d.com/product/unity/issues/guid/1309753/)
-- Modified state in the VFX tab has now a correct state
-- Motion Vector map sampling for flipbooks were not using correct mips
-- Remove unexpected expression in spawn context evaluation [Case 1318412](https://issuetracker.unity3d.com/product/unity/issues/guid/1318412/)
-- Fix incorrect buffer type for strips
-- Compilation issue when normal is used in shadergraph for opacity with unlit output
-- Fix Soft Particle depth computation when using an orthographic camera [Case 1309961](https://issuetracker.unity3d.com/product/unity/issues/guid/1309961)
+
 
 ## [10.2.0] - 2020-10-19
 ### Added

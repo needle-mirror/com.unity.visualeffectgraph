@@ -15,11 +15,11 @@ RWStructuredBuffer<uint> indirectBuffer;
 #endif
 
 #if HAS_STRIPS
-RWStructuredBuffer<uint> stripDataBuffer;
+RWBuffer<uint> stripDataBuffer;
 #endif
 
 #if VFX_USE_STRIPALIVE_CURRENT
-StructuredBuffer<uint> attachedStripDataBuffer;
+Buffer<uint> attachedStripDataBuffer;
 #endif
 
 CBUFFER_START(updateParams)

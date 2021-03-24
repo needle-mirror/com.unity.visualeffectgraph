@@ -78,6 +78,15 @@ float3 VFXTransformPositionWorldToView(float3 posWS)
     return TransformWorldToView(posWS);
 }
 
+float3 VFXTransformPositionWorldToCameraRelative(float3 posWS)
+{
+#if (VFX_WORLD_SPACE || SHADEROPTIONS_CAMERA_RELATIVE_RENDERING == 0)
+    return posWS - _WorldSpaceCameraPos.xyz;
+#else
+    return posWS;
+#endif
+}
+
 float4x4 VFXGetObjectToWorldMatrix()
 {
     return GetObjectToWorldMatrix();
@@ -105,13 +114,12 @@ float4x4 VFXGetViewToWorldMatrix()
 
 float VFXSampleDepth(float4 posSS)
 {
-    float2 screenUV = GetNormalizedScreenSpaceUV(posSS.xy);
+    return LoadSceneDepth(uint2(posSS.xy));
+}
 
-    // In URP, the depth texture is optional and could be 4x4 white texture, Load isn't appropriate in that case.
-    //float depth = LoadSceneDepth(screenUV * _ScreenParams.xy);
-    float depth = SampleSceneDepth(screenUV);
-
-    return depth;
+float VFXLinearEyeDepth(float depth)
+{
+    return LinearEyeDepth(depth, _ZBufferParams);
 }
 
 void VFXApplyShadowBias(inout float4 posCS, inout float3 posWS, float3 normalWS)
@@ -142,4 +150,9 @@ float4 VFXApplyFog(float4 color,float4 posCS,float3 posWS)
    color.rgb = lerp(fog.rgb * color.a, color.rgb, fog.a);
 #endif
    return color;
+}
+
+float3 VFXGetCameraWorldDirection()
+{
+    return unity_CameraToWorld._m02_m12_m22;
 }

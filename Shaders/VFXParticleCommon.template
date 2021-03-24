@@ -78,8 +78,6 @@ ${VFXBegin:VFXVertexSetFlipbooksInterpolants}
 #endif
 ${VFXEnd}
 
-${VFXBegin:VFXFragmentCommonFunctions}#include "Packages/com.unity.visualeffectgraph/Shaders/VFXCommonOutput.hlsl"${VFXEnd}
-
 ${VFXBegin:VFXLoadAttributesOrCull}
 uint deadCount = 0;
 #if USE_DEAD_LIST_COUNT
@@ -218,8 +216,6 @@ void frag(ps_input i
 {
 	UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
 	VFXTransformPSInputs(i);
-	${VFXComputeNormalWS}
-
     #ifdef VFX_SHADERGRAPH
         ${VFXAdditionalInterpolantsPreparation}
         ${SHADERGRAPH_PIXEL_CALL_DEPTHONLY}

@@ -70,7 +70,7 @@ namespace UnityEditor.VFX
                 case VFXDataType.OutputEvent:
                     newVFXData = ScriptableObject.CreateInstance<VFXDataOutputEvent>();
                     break;
-                default: return null;
+                default:                        return null;
             }
             newVFXData.m_Parent = graph;
             return newVFXData;
@@ -160,23 +160,23 @@ namespace UnityEditor.VFX
                 throw new ArgumentException(string.Format("{0} is not in the owner list of {1}", context, this));
         }
 
-        public bool IsCurrentAttributeRead(VFXAttribute attrib) { return (GetAttributeMode(attrib) & VFXAttributeMode.Read) != 0; }
-        public bool IsCurrentAttributeWritten(VFXAttribute attrib) { return (GetAttributeMode(attrib) & VFXAttributeMode.Write) != 0; }
+        public bool IsCurrentAttributeRead(VFXAttribute attrib)                        { return (GetAttributeMode(attrib) & VFXAttributeMode.Read) != 0; }
+        public bool IsCurrentAttributeWritten(VFXAttribute attrib)                     { return (GetAttributeMode(attrib) & VFXAttributeMode.Write) != 0; }
 
-        public bool IsCurrentAttributeRead(VFXAttribute attrib, VFXContext context) { return (GetAttributeMode(attrib, context) & VFXAttributeMode.Read) != 0; }
+        public bool IsCurrentAttributeRead(VFXAttribute attrib, VFXContext context)     { return (GetAttributeMode(attrib, context) & VFXAttributeMode.Read) != 0; }
         public bool IsCurrentAttributeWritten(VFXAttribute attrib, VFXContext context) { return (GetAttributeMode(attrib, context) & VFXAttributeMode.Write) != 0; }
 
-        public bool IsAttributeUsed(VFXAttribute attrib) { return GetAttributeMode(attrib) != VFXAttributeMode.None; }
-        public bool IsAttributeUsed(VFXAttribute attrib, VFXContext context) { return GetAttributeMode(attrib, context) != VFXAttributeMode.None; }
+        public bool IsAttributeUsed(VFXAttribute attrib)                                { return GetAttributeMode(attrib) != VFXAttributeMode.None; }
+        public bool IsAttributeUsed(VFXAttribute attrib, VFXContext context)            { return GetAttributeMode(attrib, context) != VFXAttributeMode.None; }
 
-        public bool IsCurrentAttributeUsed(VFXAttribute attrib) { return (GetAttributeMode(attrib) & VFXAttributeMode.ReadWrite) != 0; }
-        public bool IsCurrentAttributeUsed(VFXAttribute attrib, VFXContext context) { return (GetAttributeMode(attrib, context) & VFXAttributeMode.ReadWrite) != 0; }
+        public bool IsCurrentAttributeUsed(VFXAttribute attrib)                         { return (GetAttributeMode(attrib) & VFXAttributeMode.ReadWrite) != 0; }
+        public bool IsCurrentAttributeUsed(VFXAttribute attrib, VFXContext context)     { return (GetAttributeMode(attrib, context) & VFXAttributeMode.ReadWrite) != 0; }
 
-        public bool IsSourceAttributeUsed(VFXAttribute attrib) { return (GetAttributeMode(attrib) & VFXAttributeMode.ReadSource) != 0; }
-        public bool IsSourceAttributeUsed(VFXAttribute attrib, VFXContext context) { return (GetAttributeMode(attrib, context) & VFXAttributeMode.ReadSource) != 0; }
+        public bool IsSourceAttributeUsed(VFXAttribute attrib)                          { return (GetAttributeMode(attrib) & VFXAttributeMode.ReadSource) != 0; }
+        public bool IsSourceAttributeUsed(VFXAttribute attrib, VFXContext context)      { return (GetAttributeMode(attrib, context) & VFXAttributeMode.ReadSource) != 0; }
 
-        public bool IsAttributeLocal(VFXAttribute attrib) { return m_LocalCurrentAttributes.Contains(attrib); }
-        public bool IsAttributeStored(VFXAttribute attrib) { return m_StoredCurrentAttributes.ContainsKey(attrib); }
+        public bool IsAttributeLocal(VFXAttribute attrib)                               { return m_LocalCurrentAttributes.Contains(attrib); }
+        public bool IsAttributeStored(VFXAttribute attrib)                              { return m_StoredCurrentAttributes.ContainsKey(attrib); }
 
         public VFXAttributeMode GetAttributeMode(VFXAttribute attrib, VFXContext context)
         {
@@ -261,7 +261,7 @@ namespace UnityEditor.VFX
             if (m_Contexts == null) // Context hasnt been initialized (may happen in unity tests but not during actual compilation)
                 InitImplicitContexts();
 
-            m_DependenciesIn = new HashSet<VFXData>(
+            var allDepenciesIn =
                 m_Contexts.Where(c => c.contextType == VFXContextType.Init)
                     .SelectMany(c => c.inputContexts.Where(i => i.contextType == VFXContextType.SpawnerGPU))
                     .SelectMany(c => c.allLinkedInputSlot)
@@ -281,18 +281,19 @@ namespace UnityEditor.VFX
                         return false;
                     })
                     .Select(s => ((VFXModel)s.owner).GetFirstOfType<VFXContext>())
-                    .Where(c => c.CanBeCompiled())
-                    .Select(c => c.GetData())
-            );
+                    .Select(c => c.GetData());
 
-            m_DependenciesOut = new HashSet<VFXData>(
+            m_DependenciesIn = new HashSet<VFXData>(allDepenciesIn.Where(c => c.CanBeCompiled()));
+            m_DependenciesInNotCompilable = new HashSet<VFXData>(allDepenciesIn.Where(c => !c.CanBeCompiled()));
+
+            var allDependenciesOut =
                 owners.SelectMany(o => o.allLinkedOutputSlot)
                     .Select(s => (VFXContext)s.owner)
-                    .Where(c => c.CanBeCompiled())
                     .SelectMany(c => c.outputContexts)
-                    .Where(c => c.CanBeCompiled())
-                    .Select(c => c.GetData())
-            );
+                    .Select(c => c.GetData());
+
+            m_DependenciesOut = new HashSet<VFXData>(allDependenciesOut.Where(c => c.CanBeCompiled()));
+            m_DependenciesOutNotCompilable = new HashSet<VFXData>(allDependenciesOut.Where(c => !c.CanBeCompiled()));
 
             m_ContextsToAttributes.Clear();
             m_AttributesToContexts.Clear();
@@ -423,7 +424,7 @@ namespace UnityEditor.VFX
                 {
                     var context = kvp2.Key;
                     if (context.contextType == VFXContextType.Init
-                        && (kvp2.Value & VFXAttributeMode.ReadSource) != 0)
+                        &&  (kvp2.Value & VFXAttributeMode.ReadSource) != 0)
                     {
                         readSourceInInit = true;
                     }
@@ -602,6 +603,7 @@ namespace UnityEditor.VFX
             }
         }
 
+        //Doesn't include not comilable context
         public IEnumerable<VFXData> dependenciesIn
         {
             get
@@ -615,6 +617,19 @@ namespace UnityEditor.VFX
             get
             {
                 return m_DependenciesOut;
+            }
+        }
+
+        public IEnumerable<VFXData> allDependenciesIncludingNotCompilable
+        {
+            get
+            {
+                var all = Enumerable.Empty<VFXData>();
+                all = all.Concat(m_DependenciesIn);
+                all = all.Concat(m_DependenciesOut);
+                all = all.Concat(m_DependenciesInNotCompilable);
+                all = all.Concat(m_DependenciesOutNotCompilable);
+                return all;
             }
         }
 
@@ -641,7 +656,13 @@ namespace UnityEditor.VFX
         protected HashSet<VFXData> m_DependenciesIn = new HashSet<VFXData>();
 
         [NonSerialized]
+        protected HashSet<VFXData> m_DependenciesInNotCompilable = new HashSet<VFXData>();
+
+        [NonSerialized]
         protected HashSet<VFXData> m_DependenciesOut = new HashSet<VFXData>();
+
+        [NonSerialized]
+        protected HashSet<VFXData> m_DependenciesOutNotCompilable = new HashSet<VFXData>();
 
         [NonSerialized]
         protected uint m_Layer;

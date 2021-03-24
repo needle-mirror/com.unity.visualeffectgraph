@@ -97,7 +97,7 @@ namespace UnityEditor.VFX.UI
 
         bool IPropertyRMProvider.expanded
         {
-            get { return expanded; }
+            get { return expanded;}
         }
         bool IPropertyRMProvider.editable
         {
@@ -848,7 +848,7 @@ namespace UnityEditor.VFX.UI
 
         public int nodeCount
         {
-            get { return m_Controllers.Count(); }
+            get {return m_Controllers.Count(); }
         }
 
 
@@ -991,7 +991,7 @@ namespace UnityEditor.VFX.UI
 
         public override Type portType
         {
-            get { return m_Controller.portType; }
+            get {return m_Controller.portType; }
         }
 
         public override object value
@@ -1014,7 +1014,7 @@ namespace UnityEditor.VFX.UI
             object result;
             if (m_PropertyCache.TryGetValue(member, out result))
             {
-                if (result is VFXGizmo.IProperty<T>)
+                if (result is VFXGizmo.IProperty<T> )
                     return result as VFXGizmo.IProperty<T>;
                 else
                     return VFXGizmoUtility.NullProperty<T>.defaultProperty;
