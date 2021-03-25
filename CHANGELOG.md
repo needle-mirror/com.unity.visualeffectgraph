@@ -4,6 +4,14 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [7.6.0] - 2021-03-25
+
+### Fixed
+- Fixed issue with VFX using incorrect buffer type for strip data
+
+### Changed
+- Tidy up of platform abstraction code for random number generation, requires a dependency on com.unity.render-pipelines.core for those abstractions.
+
 ## [7.5.3] - 2021-01-11
 ### Fixed
 - Unexpected shaderGraph reference lost while upgrading package [Case 1297186](https://issuetracker.unity3d.com/product/unity/issues/guid/1297186/)
