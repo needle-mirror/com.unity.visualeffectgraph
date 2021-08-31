@@ -13,7 +13,7 @@ using UnityObject = UnityEngine.Object;
 using System.IO;
 using UnityEditor.VersionControl;
 
-namespace UnityEditor.VFX.UI
+namespace  UnityEditor.VFX.UI
 {
     [Serializable]
     class VFXViewWindow : EditorWindow
@@ -235,13 +235,7 @@ namespace UnityEditor.VFX.UI
                 graphView.OnFocus();
         }
 
-        public void OnVisualEffectComponentChanged(IEnumerable<VisualEffect> componentChanged)
-        {
-            if (graphView != null)
-                graphView.OnVisualEffectComponentChanged(componentChanged);
-        }
-
-        public bool autoCompile { get; set; }
+        public bool autoCompile {get; set; }
 
         void Update()
         {
@@ -265,7 +259,7 @@ namespace UnityEditor.VFX.UI
                     {
                         filename = controller.name;
 
-                        if (EditorUtility.IsDirty(graph))
+                        if (!graph.saved)
                         {
                             filename += "*";
                         }

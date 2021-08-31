@@ -19,7 +19,7 @@ RWStructuredBuffer<uint> stripDataBuffer;
 #endif
 
 #if VFX_USE_STRIPALIVE_CURRENT
-StructuredBuffer<uint> attachedStripDataBuffer;
+Buffer<uint> attachedStripDataBuffer;
 #endif
 
 CBUFFER_START(updateParams)
