@@ -10,7 +10,7 @@ namespace UnityEditor.VFX.Operator
         public class InputProperties
         {
             [Tooltip("Sets the sphere used for the volume calculation.")]
-            public TSphere sphere = TSphere.defaultValue;
+            public Sphere sphere = new Sphere();
         }
 
         public class OutputProperties
@@ -23,9 +23,7 @@ namespace UnityEditor.VFX.Operator
 
         protected override sealed VFXExpression[] BuildExpression(VFXExpression[] inputExpression)
         {
-            var scale = new VFXExpressionExtractScaleFromMatrix(inputExpression[0]);
-            var radius = inputExpression[1];
-            return new VFXExpression[] { VFXOperatorUtility.SphereVolume(radius, scale) };
+            return new VFXExpression[] { VFXOperatorUtility.SphereVolume(inputExpression[1]) };
         }
     }
 }

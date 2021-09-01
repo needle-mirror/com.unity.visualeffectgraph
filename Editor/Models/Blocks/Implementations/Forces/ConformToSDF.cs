@@ -81,7 +81,7 @@ else
     dir = SampleSDFDerivativesFast(DistanceField, coord, dist);
     if (dist > 0)
         dir = -dir;
-    dir = VFXSafeNormalize(mul(float4(dir,0), InvFieldTransform).xyz);
+    dir = normalize(mul(float4(dir,0), InvFieldTransform).xyz);
 }
 
 float distToSurface = abs(dist) * scalingFactor;

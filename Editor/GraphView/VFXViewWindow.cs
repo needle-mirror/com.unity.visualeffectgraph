@@ -13,7 +13,7 @@ using UnityObject = UnityEngine.Object;
 using System.IO;
 using UnityEditor.VersionControl;
 
-namespace UnityEditor.VFX.UI
+namespace  UnityEditor.VFX.UI
 {
     [Serializable]
     class VFXViewWindow : EditorWindow
@@ -154,7 +154,7 @@ namespace UnityEditor.VFX.UI
 
         Action m_OnUpdateAction;
 
-        protected void CreateGUI()
+        protected void OnEnable()
         {
             VFXManagerEditor.CheckVFXManager();
 
@@ -219,8 +219,6 @@ namespace UnityEditor.VFX.UI
                 graphView.UnregisterCallback<AttachToPanelEvent>(OnEnterPanel);
                 graphView.UnregisterCallback<DetachFromPanelEvent>(OnLeavePanel);
                 graphView.controller = null;
-                graphView.Dispose();
-                graphView = null;
             }
             currentWindow = null;
         }
@@ -283,7 +281,6 @@ namespace UnityEditor.VFX.UI
                             {
                                 VFXGraph.compileReporter = reporter;
                                 AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(graphView.controller.model));
-                                graph.SetExpressionGraphDirty(false); // As are implemented subgraph now, compiling dependents chain can reset dirty flag on used subgraphs, which will make an infinite loop, this is bad!
                                 VFXGraph.compileReporter = null;
                             }
                             VFXGraph.explicitCompile = false;

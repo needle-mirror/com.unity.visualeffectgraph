@@ -1,9 +1,9 @@
 using UnityEngine;
+using UnityEditor;
 using UnityEditor.Overlays;
 using UnityEngine.VFX;
 using UnityEditorInternal;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace UnityEditor.VFX
 {
@@ -15,33 +15,21 @@ namespace UnityEditor.VFX
             const string k_OverlayId = "Scene View/Visual Effect Event Tester";
             const string k_DisplayName = "Visual Effect Event Tester";
 
-            public SceneViewVFXEventTesterOverlay()
+            public bool visible
             {
-                Selection.selectionChanged += OnSelectionChanged;
+                get
+                {
+                    if (Selection.activeGameObject && Selection.activeGameObject.TryGetComponent<VisualEffect>(out m_Effect))
+                        return VFXEventTesterWindow.visible;
+                    return false;
+                }
             }
-
-            public bool visible => m_Effects?.Length > 0 && VFXEventTesterWindow.visible;
 
 
             public override void OnGUI()
             {
                 if (visible)
                     WindowGUI();
-            }
-
-            public override void OnWillBeDestroyed()
-            {
-                base.OnWillBeDestroyed();
-
-                Selection.selectionChanged -= OnSelectionChanged;
-            }
-
-            private void OnSelectionChanged()
-            {
-                m_Effects = Selection.gameObjects
-                    .Select(x => x.GetComponent<VisualEffect>())
-                    .Where(x => x != null)
-                    .ToArray();
             }
         }
 
@@ -54,7 +42,7 @@ namespace UnityEditor.VFX
         [SerializeField]
         static List<EventAttribute> m_Attributes;
 
-        static VisualEffect[] m_Effects;
+        static VisualEffect m_Effect;
         static ReorderableList list;
         static readonly string PreferenceName = "VFXEventTester.Visible";
 
@@ -249,7 +237,7 @@ namespace UnityEditor.VFX
 
         static void WindowGUI()
         {
-            EditorGUI.BeginDisabled((m_Effects?.Length).GetValueOrDefault(0) == 0);
+            EditorGUI.BeginDisabled(m_Effect == null);
             EditorGUILayout.Space();
             list.DoLayoutList();
             EditorGUILayout.Space();
@@ -274,34 +262,31 @@ namespace UnityEditor.VFX
 
         static void SendEvent(string name)
         {
-            if ((m_Effects?.Length).GetValueOrDefault(0) == 0) return;
-            foreach (var visualEffect in m_Effects)
+            if (m_Effect == null) return;
+            var attrib = m_Effect.CreateVFXEventAttribute();
+            if (attrib == null) return;
+
+            // set all attributes
+            foreach (var attribute in m_Attributes)
             {
-                var attrib = visualEffect.CreateVFXEventAttribute();
-                if (attrib == null) return;
-
-                // set all attributes
-                foreach (var attribute in m_Attributes)
+                if (attribute == null) continue;
+                switch (attribute.type)
                 {
-                    if (attribute == null) continue;
-                    switch (attribute.type)
-                    {
-                        case EventAttributeType.Bool: attrib.SetBool(attribute.name, (bool)attribute.value); break;
-                        case EventAttributeType.Float: attrib.SetFloat(attribute.name, (float)attribute.value); break;
-                        case EventAttributeType.Vector2: attrib.SetVector2(attribute.name, (Vector2)attribute.value); break;
-                        case EventAttributeType.Vector3: attrib.SetVector3(attribute.name, (Vector3)attribute.value); break;
-                        case EventAttributeType.Color: attrib.SetVector4(attribute.name, (Color)attribute.value); break;
-                    }
+                    case EventAttributeType.Bool: attrib.SetBool(attribute.name, (bool)attribute.value); break;
+                    case EventAttributeType.Float: attrib.SetFloat(attribute.name, (float)attribute.value); break;
+                    case EventAttributeType.Vector2: attrib.SetVector2(attribute.name, (Vector2)attribute.value); break;
+                    case EventAttributeType.Vector3: attrib.SetVector3(attribute.name, (Vector3)attribute.value); break;
+                    case EventAttributeType.Color: attrib.SetVector4(attribute.name, (Color)attribute.value); break;
                 }
-
-                // then send event with attributes
-                if (name == VisualEffectAsset.PlayEventName)
-                    visualEffect.Play(attrib);
-                else if (name == VisualEffectAsset.StopEventName)
-                    visualEffect.Stop(attrib);
-                else
-                    visualEffect.SendEvent(name, attrib);
             }
+
+            // then send event with attributes
+            if (name == "OnPlay")
+                m_Effect.Play(attrib);
+            else if (name == "OnStop")
+                m_Effect.Stop(attrib);
+            else
+                m_Effect.SendEvent(name, attrib);
         }
 
         static class Contents

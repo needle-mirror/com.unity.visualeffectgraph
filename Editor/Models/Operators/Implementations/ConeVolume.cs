@@ -10,7 +10,7 @@ namespace UnityEditor.VFX.Operator
         public class InputProperties
         {
             [Tooltip("Sets the cone used for the volume calculation.")]
-            public TCone cone = TCone.defaultValue;
+            public Cone cone = new Cone();
         }
 
         public class OutputProperties
@@ -23,12 +23,7 @@ namespace UnityEditor.VFX.Operator
 
         protected override sealed VFXExpression[] BuildExpression(VFXExpression[] inputExpression)
         {
-            var scale = new VFXExpressionExtractScaleFromMatrix(inputExpression[0]);
-            var baseRadius = inputExpression[1];
-            var topRadius = inputExpression[2];
-            var height = inputExpression[3];
-
-            return new VFXExpression[] { VFXOperatorUtility.ConeVolume(baseRadius, topRadius, height, scale) };
+            return new VFXExpression[] { VFXOperatorUtility.ConeVolume(inputExpression[1], inputExpression[2], inputExpression[3]) };
         }
     }
 }

@@ -12,7 +12,7 @@ using System.Text;
 using UnityEditor.Graphs;
 using UnityEditor.SceneManagement;
 
-namespace UnityEditor.VFX.UI
+namespace  UnityEditor.VFX.UI
 {
     class VFXBoundsRecorderField : VisualElement, ISelectable
     {

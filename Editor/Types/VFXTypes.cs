@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -43,30 +46,29 @@ namespace UnityEditor.VFX
         public static readonly int SpaceCount = Enum.GetValues(typeof(VFXCoordinateSpace)).Length;
     }
 
-    [VFXType(VFXTypeAttribute.Usage.Default, "Circle"), Serializable]
-    struct TCircle
+    [VFXType, Serializable]
+    struct Circle
     {
-        [Tooltip("Sets the transform of the circle.")]
-        public Transform transform;
+        [Tooltip("Sets the center of the circle."), VFXSpace(SpaceableType.Position)]
+        public Vector3 center;
         [Tooltip("Sets the radius of the circle.")]
         public float radius;
 
-        public static TCircle defaultValue = new TCircle { transform = Transform.defaultValue, radius = 1.0f };
+        public static Circle defaultValue = new Circle { radius = 1.0f };
     }
 
-    [VFXType(VFXTypeAttribute.Usage.Default, "Arc Circle"), Serializable]
-    struct TArcCircle
+    [VFXType, Serializable]
+    struct ArcCircle
     {
         [Tooltip("Sets the Circle shape input.")]
-        public TCircle circle;
+        public Circle circle;
         [Angle, Range(0, Mathf.PI * 2.0f), Tooltip("Controls how much of the circle is used. The value is in radians.")]
         public float arc;
 
-        public static TArcCircle defaultValue = new TArcCircle { circle = TCircle.defaultValue, arc = 2.0f * Mathf.PI };
+        public static ArcCircle defaultValue = new ArcCircle { circle = Circle.defaultValue, arc = 2.0f * Mathf.PI };
     }
 
-    //This type is only used in DistanceToSphere
-    [VFXType(VFXTypeAttribute.Usage.ExcludeFromProperty, "Simple Sphere"), Serializable]
+    [VFXType, Serializable]
     struct Sphere
     {
         [Tooltip("Sets the center of the sphere."), VFXSpace(SpaceableType.Position)]
@@ -77,93 +79,17 @@ namespace UnityEditor.VFX
         public static Sphere defaultValue = new Sphere { radius = 1.0f };
     }
 
-    [VFXType(VFXTypeAttribute.Usage.Default, "Sphere"), Serializable]
-    struct TSphere
+    [VFXType, Serializable]
+    struct ArcSphere
     {
-        [Tooltip("Sets the transform of the sphere.")]
-        public Transform transform;
-        [Tooltip("Sets the radius of the sphere.")]
-        public float radius;
-
-        public static implicit operator TSphere(Sphere v)
-        {
-            return new TSphere()
-            {
-                transform = new Transform()
-                {
-                    position = v.center,
-                    scale = Vector3.one
-                },
-                radius = v.radius
-            };
-        }
-
-        public static TSphere defaultValue = new TSphere { transform = Transform.defaultValue, radius = 1.0f };
-    }
-
-    [VFXType(VFXTypeAttribute.Usage.Default), Serializable]
-    struct TArcSphere
-    {
-        public TSphere sphere;
+        public Sphere sphere;
         [Angle, Range(0, Mathf.PI * 2.0f), Tooltip("Controls how much of the sphere is used. The value is in radians.")]
         public float arc;
 
-        public static TArcSphere defaultValue = new TArcSphere { sphere = TSphere.defaultValue, arc = 2.0f * Mathf.PI };
+        public static ArcSphere defaultValue = new ArcSphere { sphere = Sphere.defaultValue, arc = 2.0f * Mathf.PI };
     }
 
-
-    [VFXType(VFXTypeAttribute.Usage.Default, "Cone"), Serializable]
-    struct TCone
-    {
-        [Tooltip("Sets the transform of the cone.")]
-        public Transform transform;
-        [Min(0.0f), Tooltip("Sets the base radius of the cone.")]
-        public float baseRadius;
-        [Min(0.0f), Tooltip("Sets the top radius of the cone.")]
-        public float topRadius;
-        [Tooltip("Sets the height of the cone.")]
-        public float height;
-        [Angle, Range(0, Mathf.PI * 2.0f), Tooltip("Controls how much of the cone is used. The value is in radians.")]
-
-        public static TCone defaultValue = new TCone { transform = Transform.defaultValue, baseRadius = 1.0f, topRadius = 0.1f, height = 1.0f };
-    }
-
-    [VFXType(VFXTypeAttribute.Usage.Default, "Arc Cone"), Serializable]
-    struct TArcCone
-    {
-        [Tooltip("Sets the cone.")]
-        public TCone cone;
-        [Angle, Range(0, Mathf.PI * 2.0f), Tooltip("Controls how much of the cone is used. The value is in radians.")]
-        public float arc;
-
-        public static TArcCone defaultValue = new TArcCone { cone = TCone.defaultValue, arc = 2.0f * Mathf.PI };
-    }
-
-    [VFXType(VFXTypeAttribute.Usage.Default, "Torus"), Serializable]
-    struct TTorus
-    {
-        [Tooltip("Sets the transform of the torus.")]
-        public Transform transform;
-        [Tooltip("Sets the radius of the torus ring.")]
-        public float majorRadius;
-        [Tooltip("Sets the thickness of the torus ring.")]
-        public float minorRadius;
-
-        public static TTorus defaultValue = new TTorus { transform = Transform.defaultValue, majorRadius = 1.0f, minorRadius = 0.1f };
-    }
-
-    [VFXType(VFXTypeAttribute.Usage.Default, "Arc Torus"), Serializable]
-    struct TArcTorus
-    {
-        [Tooltip("Sets the cone.")]
-        public TTorus torus;
-        [Angle, Range(0, Mathf.PI * 2.0f), Tooltip("Controls how much of the torus is used.")]
-        public float arc;
-
-        public static TArcTorus defaultValue = new TArcTorus { torus = TTorus.defaultValue, arc = 2.0f * Mathf.PI };
-    }
-
-    [VFXType(VFXTypeAttribute.Usage.Default, "Oriented Box"), VFXSpace(SpaceableType.Matrix), Serializable]
+    [VFXType, VFXSpace(SpaceableType.Matrix), Serializable]
     struct OrientedBox
     {
         [Tooltip("Sets the center of the box."), VFXSpace(SpaceableType.Position)]
@@ -176,7 +102,7 @@ namespace UnityEditor.VFX
         public static OrientedBox defaultValue = new OrientedBox { size = Vector3.one };
     }
 
-    [VFXType(VFXTypeAttribute.Usage.Default, "Axis Aligned Box"), Serializable]
+    [VFXType, Serializable]
     struct AABox
     {
         [Tooltip("Sets the center of the box."), VFXSpace(SpaceableType.Position)]
@@ -201,6 +127,79 @@ namespace UnityEditor.VFX
     }
 
     [VFXType, Serializable]
+    struct Cylinder
+    {
+        [Tooltip("Sets the center of the cylinder."), VFXSpace(SpaceableType.Position)]
+        public Vector3 center;
+        [Tooltip("Sets the radius of the cylinder.")]
+        public float radius;
+        [Tooltip("Sets the height of the cylinder.")]
+        public float height;
+
+        public static Cylinder defaultValue = new Cylinder { radius = 1.0f, height = 1.0f };
+    }
+
+    [VFXType, Serializable]
+    struct Cone
+    {
+        [Tooltip("Sets the center of the cone."), VFXSpace(SpaceableType.Position)]
+        public Vector3 center;
+        [Min(0.0f), Tooltip("Sets the base radius of the cone.")]
+        public float radius0;
+        [Min(0.0f), Tooltip("Sets the top radius of the cone.")]
+        public float radius1;
+        [Tooltip("Sets the height of the cone.")]
+        public float height;
+
+        public static Cone defaultValue = new Cone { radius0 = 1.0f, radius1 = 0.1f, height = 1.0f };
+    }
+
+    [VFXType, Serializable]
+    struct ArcCone
+    {
+        [Tooltip("Sets the center of the cone."), VFXSpace(SpaceableType.Position)]
+        public Vector3 center;
+        [Min(0.0f), Tooltip("Sets the base radius of the cone.")]
+        public float radius0;
+        [Min(0.0f), Tooltip("Sets the top radius of the cone.")]
+        public float radius1;
+        [Tooltip("Sets the height of the cone.")]
+        public float height;
+        [Angle, Range(0, Mathf.PI * 2.0f), Tooltip("Controls how much of the cone is used. The value is in radians.")]
+        public float arc;
+
+        public static ArcCone defaultValue = new ArcCone { radius0 = 1.0f, radius1 = 0.1f, height = 1.0f, arc = 2.0f * Mathf.PI};
+    }
+
+    [VFXType, Serializable]
+    struct Torus
+    {
+        [Tooltip("Sets the center of the torus."), VFXSpace(SpaceableType.Position)]
+        public Vector3 center;
+        [Tooltip("Sets the radius of the torus ring.")]
+        public float majorRadius;
+        [Tooltip("Sets the thickness of the torus ring.")]
+        public float minorRadius;
+
+        public static Torus defaultValue = new Torus { majorRadius = 1.0f, minorRadius = 0.1f };
+    }
+
+    [VFXType, Serializable]
+    struct ArcTorus
+    {
+        [Tooltip("Sets the center of the torus."), VFXSpace(SpaceableType.Position)]
+        public Vector3 center;
+        [Tooltip("Sets the radius of the torus ring.")]
+        public float majorRadius;
+        [Tooltip("Sets the thickness of the torus ring.")]
+        public float minorRadius;
+        [Angle, Range(0, Mathf.PI * 2.0f), Tooltip("Controls how much of the torus is used.")]
+        public float arc;
+
+        public static ArcTorus defaultValue = new ArcTorus { majorRadius = 1.0f, minorRadius = 0.1f, arc = 2.0f * Mathf.PI};
+    }
+
+    [VFXType, Serializable]
     struct Line
     {
         [Tooltip("Sets the start position of the line."), VFXSpace(SpaceableType.Position)]
@@ -222,21 +221,6 @@ namespace UnityEditor.VFX
         public Vector3 scale;
 
         public static Transform defaultValue = new Transform { scale = Vector3.one };
-
-        public static implicit operator Matrix4x4(Transform t)
-        {
-            return Matrix4x4.TRS(t.position, Quaternion.Euler(t.angles), t.scale);
-        }
-
-        public static implicit operator Transform(Matrix4x4 m)
-        {
-            return new Transform()
-            {
-                position = m.GetPosition(),
-                angles = m.rotation.eulerAngles,
-                scale = m.lossyScale
-            };
-        }
     }
 
     [VFXType, Serializable]
@@ -258,7 +242,7 @@ namespace UnityEditor.VFX
         public static Position defaultValue = new Position { position = Vector3.zero };
     }
 
-    [VFXType(VFXTypeAttribute.Usage.Default, "Direction"), Serializable]
+    [VFXType, Serializable]
     struct DirectionType
     {
         [Tooltip("The normalized direction."), VFXSpace(SpaceableType.Direction)]
@@ -305,7 +289,7 @@ namespace UnityEditor.VFX
         public static FlipBook defaultValue = new FlipBook { x = 4, y = 4 };
     }
 
-    [VFXType(VFXTypeAttribute.Usage.ExcludeFromProperty), Serializable]
+    [VFXType, Serializable]
     struct CameraBuffer
     {
         private Texture texture;
@@ -336,21 +320,17 @@ namespace UnityEditor.VFX
         }
     }
 
-    [VFXType(VFXTypeAttribute.Usage.Default, "Camera"), Serializable]
+    [VFXType, Serializable]
     struct CameraType
     {
         [Tooltip("The camera's Transform in the world.")]
         public Transform transform;
-        [Tooltip("Uses Orthographic projection.")]
-        public bool orthographic;
         [Angle, Range(0.0f, Mathf.PI), Tooltip("The field of view is the height of the camera’s view angle, measured in degrees along the local Y axis.")]
         public float fieldOfView;
         [Min(0.0f), Tooltip("The near plane is the closest plane relative to the camera where drawing occurs.")]
         public float nearPlane;
         [Min(0.0f), Tooltip("The far plane is the furthest plane relative to the camera where drawing occurs.")]
         public float farPlane;
-        [Min(0.0f), Tooltip("The orthographic size is half the size of the vertical viewing volume.")]
-        public float orthographicSize;
         [Min(0.0f), Tooltip("The aspect ratio is the proportional relationship between the camera’s width and height.")]
         public float aspectRatio;
         [Min(0.0f), Tooltip("The width and height of the camera in pixels.")]
@@ -360,7 +340,7 @@ namespace UnityEditor.VFX
         [Tooltip("The color buffer of the camera, containing the rendered color information.")]
         public CameraBuffer colorBuffer;
 
-        public static CameraType defaultValue = new CameraType { transform = Transform.defaultValue, fieldOfView = 60.0f * Mathf.Deg2Rad, nearPlane = 0.3f, farPlane = 1000.0f, aspectRatio = 1.0f, orthographicSize = 5.0f, pixelDimensions = new Vector2(1920, 1080) };
+        public static CameraType defaultValue = new CameraType { transform = Transform.defaultValue, fieldOfView = 60.0f * Mathf.Deg2Rad, nearPlane = 0.3f, farPlane = 1000.0f, aspectRatio = 1.0f, pixelDimensions = new Vector2(1920, 1080) };
     }
 
     [VFXType, Serializable]

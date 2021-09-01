@@ -10,7 +10,7 @@ namespace UnityEditor.VFX.Operator
         public class InputProperties
         {
             [Tooltip("Sets the sphere used for the distance calculation.")]
-            public Sphere sphere = Sphere.defaultValue;
+            public Sphere sphere = new Sphere();
             [Tooltip("Sets the position used for the distance calculation.")]
             public Position position = new Position();
         }

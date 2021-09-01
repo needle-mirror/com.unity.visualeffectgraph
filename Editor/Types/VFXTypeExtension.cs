@@ -1,9 +1,8 @@
 using System;
-using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.VFX;
 
 namespace UnityEditor.VFX
 {
@@ -29,22 +28,20 @@ namespace UnityEditor.VFX
             s_FriendlyName[typeof(decimal)] = "decimal";
             s_FriendlyName[typeof(char)] = "char";
             s_FriendlyName[typeof(string)] = "string";
+            s_FriendlyName[typeof(DirectionType)] = "Direction";
+            s_FriendlyName[typeof(CameraType)] = "Camera";
         }
 
         public static string UserFriendlyName(this Type type)
         {
             if (type == null)
                 return "null";
-            if (s_FriendlyName.TryGetValue(type, out var result))
+            string result;
+            if (s_FriendlyName.TryGetValue(type, out result))
+            {
                 return result;
-
-            result = type.Name;
-            var typeAttribute = type.GetCustomAttributes(typeof(VFXTypeAttribute), true).FirstOrDefault() as VFXTypeAttribute;
-            if (typeAttribute != null && typeAttribute.name != null)
-                result = typeAttribute.name;
-            s_FriendlyName.Add(type, result);
-
-            return result;
+            }
+            return type.Name;
         }
 
         // needed only for .NET 4.6 which make the GetNestedType non recursive

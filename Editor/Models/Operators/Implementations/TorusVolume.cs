@@ -10,7 +10,7 @@ namespace UnityEditor.VFX.Operator
         public class InputProperties
         {
             [Tooltip("Sets the torus used for the volume calculation.")]
-            public TTorus torus = TTorus.defaultValue;
+            public Torus torus = new Torus();
         }
 
         public class OutputProperties
@@ -23,10 +23,7 @@ namespace UnityEditor.VFX.Operator
 
         protected override sealed VFXExpression[] BuildExpression(VFXExpression[] inputExpression)
         {
-            var scale = new VFXExpressionExtractScaleFromMatrix(inputExpression[0]);
-            var majorRadius = inputExpression[1];
-            var minorRadius = inputExpression[2];
-            return new VFXExpression[] { VFXOperatorUtility.TorusVolume(majorRadius, minorRadius, scale) };
+            return new VFXExpression[] { VFXOperatorUtility.TorusVolume(inputExpression[1], inputExpression[2]) };
         }
     }
 }
