@@ -236,7 +236,7 @@ namespace UnityEditor.VFX.UI
                 if (!m_WaitingRecompute)
                 {
                     m_WaitingRecompute = true;
-                    schedule.Execute(() => { m_WaitingRecompute = false; RecomputeBounds();  }).ExecuteLater(0); // title height might have changed if width have changed
+                    schedule.Execute(() => { m_WaitingRecompute = false; RecomputeBounds(); }).ExecuteLater(0); // title height might have changed if width have changed
                 }
             }
             else

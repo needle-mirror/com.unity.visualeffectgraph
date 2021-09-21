@@ -146,7 +146,7 @@ namespace UnityEditor.VFX.UI
 
         protected override string title
         {
-            get {return "Block"; }
+            get { return "Block"; }
         }
 
         protected override IEnumerable<VFXBlockProvider.Descriptor> GetDescriptors()
@@ -156,7 +156,7 @@ namespace UnityEditor.VFX.UI
 
 
             filteredBlocks = filteredBlocks.Concat(SubGraphCache.GetItems(typeof(VisualEffectSubgraphBlock)).Where(t =>
-                (((SubGraphCache.AdditionalBlockInfo)t.additionalInfos).compatibleType & m_ContextController.model.contextType) != 0  &&
+                (((SubGraphCache.AdditionalBlockInfo)t.additionalInfos).compatibleType & m_ContextController.model.contextType) != 0 &&
                 (((SubGraphCache.AdditionalBlockInfo)t.additionalInfos).compatibleData & m_ContextController.model.ownedType) != 0
                 ).Select(t => (Descriptor) new SubgraphBlockDescriptor(t)));
 

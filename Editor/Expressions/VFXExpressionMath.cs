@@ -379,7 +379,7 @@ namespace UnityEditor.VFX
 
         protected override VFXExpression Reduce(VFXExpression[] reducedParents)
         {
-            var zero  = VFXOperatorUtility.ZeroExpression[reducedParents[0].valueType];
+            var zero = VFXOperatorUtility.ZeroExpression[reducedParents[0].valueType];
             if (zero.Equals(reducedParents[0]) || zero.Equals(reducedParents[1]))
                 return zero;
 
