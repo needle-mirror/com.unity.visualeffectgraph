@@ -607,9 +607,6 @@ namespace UnityEditor.VFX.UI
                 path = m_AttachedComponent.gameObject.scene.name + " : " + path;
             }
 
-            if (m_Subtitle.text != path)
-                m_Subtitle.text = path;
-
             if (m_ParticleCount != null)
             {
                 int newParticleCount = 0;//m_AttachedComponent.aliveParticleCount
@@ -836,14 +833,14 @@ namespace UnityEditor.VFX.UI
             BoardPreferenceHelper.SavePosition(BoardPreferenceHelper.Board.componentBoard, GetPosition());
         }
 
-        void IVFXResizable.OnStartResize() {}
+        void IVFXResizable.OnStartResize() { }
         public void OnResized()
         {
             BoardPreferenceHelper.SavePosition(BoardPreferenceHelper.Board.componentBoard, GetPosition());
         }
     }
     class VFXComponentBoardEventUIFactory : UxmlFactory<VFXComponentBoardEventUI>
-    {}
+    { }
     class VFXComponentBoardEventUI : VisualElement
     {
         public VFXComponentBoardEventUI()
@@ -906,7 +903,7 @@ namespace UnityEditor.VFX.UI
     }
 
     class VFXComponentBoardBoundsSystemUIFactory : UxmlFactory<VFXComponentBoardBoundsSystemUI>
-    {}
+    { }
 
     class VFXComponentBoardBoundsSystemUI : VisualElement
     {

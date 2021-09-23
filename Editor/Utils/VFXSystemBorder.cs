@@ -11,7 +11,7 @@ using UnityObject = UnityEngine.Object;
 namespace UnityEditor.VFX.UI
 {
     class VFXSystemBorderFactory : UxmlFactory<VFXSystemBorder>
-    {}
+    { }
 
 
     class VFXSystemBorder : GraphElement, IControlledElement<VFXSystemController>, IDisposable

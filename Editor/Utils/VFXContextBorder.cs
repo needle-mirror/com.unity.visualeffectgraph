@@ -9,7 +9,7 @@ using UnityObject = UnityEngine.Object;
 namespace UnityEditor.VFX.UI
 {
     class VFXContextBorderFactory : UxmlFactory<VFXContextBorder>
-    {}
+    { }
 
     class VFXContextBorder : ImmediateModeElement, IDisposable
     {

@@ -8,7 +8,7 @@ namespace UnityEditor.VFX.UI
     class VFXBoundsSelector : VisualElement, ISelection
     {
         class VFXBoundsSelectorFactory : UxmlFactory<VFXBoundsSelector>
-        {}
+        { }
 
         public VFXBoundsSelector()
         {

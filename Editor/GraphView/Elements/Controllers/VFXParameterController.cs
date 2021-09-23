@@ -231,8 +231,8 @@ namespace UnityEditor.VFX.UI
             throw new NotImplementedException();
         }
 
-        void IPropertyRMProvider.StartLiveModification() {}
-        void IPropertyRMProvider.EndLiveModification() {}
+        void IPropertyRMProvider.StartLiveModification() { }
+        void IPropertyRMProvider.EndLiveModification() { }
     }
 
     class VFXMinMaxParameterController : IPropertyRMProvider
@@ -335,8 +335,8 @@ namespace UnityEditor.VFX.UI
             throw new NotImplementedException();
         }
 
-        void IPropertyRMProvider.StartLiveModification() {}
-        void IPropertyRMProvider.EndLiveModification() {}
+        void IPropertyRMProvider.StartLiveModification() { }
+        void IPropertyRMProvider.EndLiveModification() { }
     }
     class VFXParameterController : VFXController<VFXParameter>, IPropertyRMProvider, IGizmoController, IGizmoable
     {
@@ -392,7 +392,7 @@ namespace UnityEditor.VFX.UI
             if (VFXGizmoUtility.HasGizmo(model.type))
                 m_Gizmoables = new IGizmoable[] { this };
             else
-                m_Gizmoables = new IGizmoable[] {};
+                m_Gizmoables = new IGizmoable[] { };
         }
 
         string IGizmoable.name
@@ -841,7 +841,7 @@ namespace UnityEditor.VFX.UI
             }
         }
 
-        public IGizmoable currentGizmoable { get { return this; } set {} }
+        public IGizmoable currentGizmoable { get { return this; } set { } }
 
         Dictionary<int, VFXParameterNodeController> m_Controllers = new Dictionary<int, VFXParameterNodeController>();
 
@@ -915,7 +915,7 @@ namespace UnityEditor.VFX.UI
 
         public override string name { get { return "Value"; } }
 
-        public object[] customAttributes { get { return new object[] {}; } }
+        public object[] customAttributes { get { return new object[] { }; } }
 
         public VFXPropertyAttributes attributes
         {
@@ -1007,7 +1007,7 @@ namespace UnityEditor.VFX.UI
             }
         }
 
-        protected override void InternalPrepare() {}
+        protected override void InternalPrepare() { }
 
         public override VFXGizmo.IProperty<T> RegisterProperty<T>(string member)
         {

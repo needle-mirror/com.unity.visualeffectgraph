@@ -939,7 +939,7 @@ namespace UnityEditor.VFX
         {
             private VFXExpressionMapper mapper;
 
-            public VFXImplicitContextOfExposedExpression() : base(VFXContextType.None, VFXDataType.None, VFXDataType.None) {}
+            public VFXImplicitContextOfExposedExpression() : base(VFXContextType.None, VFXDataType.None, VFXDataType.None) { }
 
             private static void CollectExposedExpression(List<VFXExpression> expressions, VFXSlot slot)
             {
@@ -1002,7 +1002,7 @@ namespace UnityEditor.VFX
                 m_Graph.visualEffectResource.ClearRuntimeData();
 
             m_ExpressionGraph = new VFXExpressionGraph();
-            m_ExpressionValues = new VFXExpressionValueContainerDesc[] {};
+            m_ExpressionValues = new VFXExpressionValueContainerDesc[] { };
         }
 
         public void Compile(VFXCompilationMode compilationMode, bool forceShaderValidation)

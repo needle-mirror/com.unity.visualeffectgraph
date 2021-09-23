@@ -52,7 +52,7 @@ namespace UnityEditor.VFX.UI
             m_Name = name;
         }
 
-        VFXCoordinateSpace IPropertyRMProvider.space { get { return VFXCoordinateSpace.Local; } set {} }
+        VFXCoordinateSpace IPropertyRMProvider.space { get { return VFXCoordinateSpace.Local; } set { } }
 
         bool IPropertyRMProvider.IsSpaceInherited() { return false; }
 
@@ -92,20 +92,20 @@ namespace UnityEditor.VFX.UI
         int IPropertyRMProvider.depth { get { return 0; } }
         bool IPropertyRMProvider.editable { get { return true; } }
         void IPropertyRMProvider.RetractPath()
-        {}
+        { }
         void IPropertyRMProvider.ExpandPath()
-        {}
+        { }
 
 
-        void IPropertyRMProvider.StartLiveModification() {}
-        void IPropertyRMProvider.EndLiveModification() {}
+        void IPropertyRMProvider.StartLiveModification() { }
+        void IPropertyRMProvider.EndLiveModification() { }
     }
 
     abstract class PropertyRM : VisualElement
     {
         public abstract void SetValue(object obj);
         public abstract object GetValue();
-        public virtual void SetMultiplier(object obj) {}
+        public virtual void SetMultiplier(object obj) { }
 
         public VisualElement m_Icon;
         Clickable m_IconClickable;
@@ -463,7 +463,7 @@ namespace UnityEditor.VFX.UI
     abstract class PropertyRM<T> : PropertyRM
     {
         public PropertyRM(IPropertyRMProvider controller, float labelWidth) : base(controller, labelWidth)
-        {}
+        { }
         public override void SetValue(object obj)
         {
             if (obj != null)

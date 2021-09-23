@@ -88,7 +88,7 @@ namespace UnityEditor.VFX
         }
 
         public VFXContext(VFXContextType contextType) : this(contextType, VFXDataType.None, VFXDataType.None)
-        {}
+        { }
 
         // Called by VFXData
         public static T CreateImplicitContext<T>(VFXData data) where T : VFXContext
@@ -194,7 +194,7 @@ namespace UnityEditor.VFX
         }
 
         public virtual bool SetupCompilation() { return true; }
-        public virtual void EndCompilation() {}
+        public virtual void EndCompilation() { }
 
 
         public void DetachAllInputFlowSlots(bool notify = true)
@@ -387,8 +387,8 @@ namespace UnityEditor.VFX
             }
         }
 
-        public VFXContextSlot[] inputFlowSlot { get { return m_InputFlowSlot == null ? new VFXContextSlot[] {} : m_InputFlowSlot; } }
-        public VFXContextSlot[] outputFlowSlot { get { return m_OutputFlowSlot == null ? new VFXContextSlot[] {} : m_OutputFlowSlot; } }
+        public VFXContextSlot[] inputFlowSlot { get { return m_InputFlowSlot == null ? new VFXContextSlot[] { } : m_InputFlowSlot; } }
+        public VFXContextSlot[] outputFlowSlot { get { return m_OutputFlowSlot == null ? new VFXContextSlot[] { } : m_OutputFlowSlot; } }
         protected virtual int inputFlowCount { get { return 1; } }
         protected virtual int outputFlowCount { get { return 1; } }
 

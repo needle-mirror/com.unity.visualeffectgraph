@@ -229,12 +229,6 @@ namespace UnityEditor.VFX
             return true;
         }
 
-        public static bool IsTexture(Type type)
-        {
-            var valueType = GetVFXValueTypeFromType(type);
-            return IsTexture(valueType);
-        }
-
         public static bool IsTexture(VFXValueType type)
         {
             switch (type)
@@ -584,17 +578,17 @@ namespace UnityEditor.VFX
             }
         }
 
-        public static VFXExpression operator*(VFXExpression a, VFXExpression b) { return new VFXExpressionMul(a, b); }
-        public static VFXExpression operator/(VFXExpression a, VFXExpression b) { return new VFXExpressionDivide(a, b); }
-        public static VFXExpression operator+(VFXExpression a, VFXExpression b) { return new VFXExpressionAdd(a, b); }
-        public static VFXExpression operator-(VFXExpression a, VFXExpression b) { return new VFXExpressionSubtract(a, b); }
+        public static VFXExpression operator *(VFXExpression a, VFXExpression b) { return new VFXExpressionMul(a, b); }
+        public static VFXExpression operator /(VFXExpression a, VFXExpression b) { return new VFXExpressionDivide(a, b); }
+        public static VFXExpression operator +(VFXExpression a, VFXExpression b) { return new VFXExpressionAdd(a, b); }
+        public static VFXExpression operator -(VFXExpression a, VFXExpression b) { return new VFXExpressionSubtract(a, b); }
 
-        public static VFXExpression operator|(VFXExpression a, VFXExpression b) { return new VFXExpressionBitwiseOr(a, b); }
-        public static VFXExpression operator&(VFXExpression a, VFXExpression b) { return new VFXExpressionBitwiseAnd(a, b); }
-        public static VFXExpression operator|(VFXExpression a, uint b) { return new VFXExpressionBitwiseOr(a, VFXValue.Constant(b)); }
-        public static VFXExpression operator&(VFXExpression a, uint b) { return new VFXExpressionBitwiseAnd(a, VFXValue.Constant(b)); }
-        public static VFXExpression operator<<(VFXExpression a, int shift) { return new VFXExpressionBitwiseLeftShift(a, VFXValue.Constant((uint)shift)); }
-        public static VFXExpression operator>>(VFXExpression a, int shift) { return new VFXExpressionBitwiseRightShift(a, VFXValue.Constant((uint)shift)); }
+        public static VFXExpression operator |(VFXExpression a, VFXExpression b) { return new VFXExpressionBitwiseOr(a, b); }
+        public static VFXExpression operator &(VFXExpression a, VFXExpression b) { return new VFXExpressionBitwiseAnd(a, b); }
+        public static VFXExpression operator |(VFXExpression a, uint b) { return new VFXExpressionBitwiseOr(a, VFXValue.Constant(b)); }
+        public static VFXExpression operator &(VFXExpression a, uint b) { return new VFXExpressionBitwiseAnd(a, VFXValue.Constant(b)); }
+        public static VFXExpression operator <<(VFXExpression a, int shift) { return new VFXExpressionBitwiseLeftShift(a, VFXValue.Constant((uint)shift)); }
+        public static VFXExpression operator >>(VFXExpression a, int shift) { return new VFXExpressionBitwiseRightShift(a, VFXValue.Constant((uint)shift)); }
 
         public VFXExpression this[int index] { get { return new VFXExpressionExtractComponent(this, index); } }
         public VFXExpression x { get { return new VFXExpressionExtractComponent(this, 0); } }

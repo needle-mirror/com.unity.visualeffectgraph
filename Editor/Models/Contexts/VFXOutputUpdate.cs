@@ -20,7 +20,7 @@ namespace UnityEditor.VFX
             FrustumCulling = 1 << 6 | IndirectDraw,
         }
 
-        public VFXOutputUpdate() : base(VFXContextType.Filter, VFXDataType.Particle, VFXDataType.Particle) {}
+        public VFXOutputUpdate() : base(VFXContextType.Filter, VFXDataType.Particle, VFXDataType.Particle) { }
         public override string name => "OutputUpdate";
 
         private VFXAbstractParticleOutput m_Output;

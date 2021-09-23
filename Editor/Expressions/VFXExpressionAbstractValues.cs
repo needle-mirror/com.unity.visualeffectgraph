@@ -293,11 +293,6 @@ namespace UnityEditor.VFX
                 m_Content = obj.GetInstanceID();
                 return;
             }
-            if (value is CameraBuffer cameraBuffer)
-            {
-                m_Content = cameraBuffer;
-                return;
-            }
             if (value is GraphicsBuffer)
             {
                 m_Content = (int)0;

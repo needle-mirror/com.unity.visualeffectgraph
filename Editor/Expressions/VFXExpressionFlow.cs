@@ -18,7 +18,7 @@ namespace UnityEditor.VFX
     {
         public VFXExpressionCondition()
             : this(VFXValueType.Float, VFXCondition.Equal, VFXValue.Constant(0.0f), VFXValue.Constant(0.0f))
-        {}
+        { }
 
         public VFXExpressionCondition(VFXValueType type, VFXCondition cond, VFXExpression left, VFXExpression right) : base(VFXExpression.Flags.None, new VFXExpression[] { left, right })
         {
@@ -105,7 +105,7 @@ namespace UnityEditor.VFX
     {
         public VFXExpressionBranch()
             : this(VFXValue.Constant(true), VFXValue.Constant(0.0f), VFXValue.Constant(0.0f))
-        {}
+        { }
 
         public VFXExpressionBranch(VFXExpression pred, VFXExpression trueExp, VFXExpression falseExp)
             : base(VFXExpression.Flags.None, new VFXExpression[] { pred, trueExp, falseExp })

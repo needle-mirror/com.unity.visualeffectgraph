@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace UnityEditor.VFX
 {
@@ -32,12 +31,12 @@ namespace UnityEditor.VFX
 
         public virtual bool isBlendModeOpaque { get { return blendMode == BlendMode.Opaque; } }
 
-        [VFXSetting(VFXSettingAttribute.VisibleFlags.InInspector), Range(-50, 50), FormerlySerializedAs("materialOffset"), Delayed, SerializeField, Tooltip("Specifies an offset applied to the material render queue.")]
-        protected int sortingPriority = 0;
+        [VFXSetting(VFXSettingAttribute.VisibleFlags.InInspector), Delayed, SerializeField, Tooltip("Specifies an offset applied to the material render queue.")]
+        protected int materialOffset = 0;
 
-        public virtual int GetMaterialSortingPriority()
+        public int GetMaterialOffset()
         {
-            return sortingPriority;
+            return materialOffset;
         }
 
         public virtual bool hasMotionVector
@@ -56,7 +55,7 @@ namespace UnityEditor.VFX
 
         public virtual bool hasExcludeFromTAA => subOutput.supportsExcludeFromTAA && excludeFromTAA;
 
-        protected VFXAbstractRenderedOutput(VFXDataType dataType) : base(VFXContextType.Output, dataType, VFXDataType.None) {}
+        protected VFXAbstractRenderedOutput(VFXDataType dataType) : base(VFXContextType.Output, dataType, VFXDataType.None) { }
 
 
         public override IEnumerable<int> GetFilteredOutEnumerators(string name)
@@ -71,8 +70,8 @@ namespace UnityEditor.VFX
                 foreach (var setting in base.filteredOutSettings)
                     yield return setting;
 
-                if (!subOutput.supportsSortingPriority)
-                    yield return nameof(sortingPriority);
+                if (!subOutput.supportsMaterialOffset)
+                    yield return nameof(materialOffset);
             }
         }
 

@@ -82,8 +82,8 @@ namespace UnityEditor.VFX
 
     class VFXExpressionFixedRandom : VFXExpression
     {
-        public VFXExpressionFixedRandom() : this(VFXValue<uint>.Default) {}
-        public VFXExpressionFixedRandom(VFXExpression hash) : base(VFXExpression.Flags.None, hash) {}
+        public VFXExpressionFixedRandom() : this(VFXValue<uint>.Default) { }
+        public VFXExpressionFixedRandom(VFXExpression hash) : base(VFXExpression.Flags.None, hash) { }
 
         public override VFXExpressionOperation operation { get { return VFXExpressionOperation.GenerateFixedRandom; } }
 

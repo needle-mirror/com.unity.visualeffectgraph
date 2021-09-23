@@ -40,7 +40,7 @@ static class VFXPicker
     {
         if (!canceled)
         {
-            if (item?.ToObject<GameObject>() is {} go
+            if (item?.ToObject<GameObject>() is { } go
                 && go.TryGetComponent(typeof(VisualEffect), out var component)
                 && component is VisualEffect vfx)
             {

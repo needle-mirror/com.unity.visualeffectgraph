@@ -30,7 +30,7 @@ namespace UnityEditor.VFX.UI
         private bool m_Selected = false;
 
         public class VFXBoundsRecorderFieldUIFactory : UxmlFactory<VFXBoundsRecorderField>
-        {}
+        { }
 
         IVisualElementScheduledItem m_UpdateItem;
 

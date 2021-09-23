@@ -330,7 +330,7 @@ namespace UnityEditor.VFX.UI
         {
             get
             {
-                return new object[] {};
+                return new object[] { };
             }
         }
 

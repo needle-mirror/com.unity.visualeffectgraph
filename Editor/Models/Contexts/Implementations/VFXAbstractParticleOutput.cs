@@ -89,8 +89,8 @@ namespace UnityEditor.VFX
         [VFXSetting, SerializeField, Tooltip("When enabled, transparent particles fade out when near the surface of objects writing into the depth buffer (e.g. when intersecting with solid objects in the level).")]
         protected bool useSoftParticle = false;
 
-        [VFXSetting(VFXSettingAttribute.VisibleFlags.None), FormerlySerializedAs("sortPriority"), SerializeField, Header("Rendering Options"), Tooltip("")]
-        protected int vfxSystemSortPriority = 0;
+        [VFXSetting(VFXSettingAttribute.VisibleFlags.None), SerializeField, Header("Rendering Options"), Tooltip("")]
+        protected int sortPriority = 0;
 
         [VFXSetting(VFXSettingAttribute.VisibleFlags.InInspector), SerializeField, Tooltip("Specifies whether to use GPU sorting for transparent particles.")]
         protected SortMode sort = SortMode.Auto;
@@ -123,7 +123,7 @@ namespace UnityEditor.VFX
 
         private bool hasExposure { get { return needsExposureWeight && subOutput.supportsExposure; } }
 
-        public virtual void SetupMaterial(Material material) {}
+        public virtual void SetupMaterial(Material material) { }
 
         public bool HasIndirectDraw() { return (indirectDraw || HasSorting() || VFXOutputUpdate.HasFeature(outputUpdateFeatures, VFXOutputUpdate.Features.IndirectDraw)) && !HasStrips(true); }
         public virtual bool HasSorting() { return (sort == SortMode.On || (sort == SortMode.Auto && (blendMode == BlendMode.Alpha || blendMode == BlendMode.AlphaPremultiplied))) && !HasStrips(true); }
@@ -148,17 +148,17 @@ namespace UnityEditor.VFX
             }
         }
 
-        int IVFXSubRenderer.vfxSystemSortPriority
+        int IVFXSubRenderer.sortPriority
         {
             get
             {
-                return vfxSystemSortPriority;
+                return sortPriority;
             }
             set
             {
-                if (vfxSystemSortPriority != value)
+                if (sortPriority != value)
                 {
-                    vfxSystemSortPriority = value;
+                    sortPriority = value;
                     Invalidate(InvalidationCause.kSettingChanged);
                 }
             }
@@ -167,7 +167,7 @@ namespace UnityEditor.VFX
 
         public bool HasStrips(bool data = false) { return (data ? GetData().type : ownedType) == VFXDataType.ParticleStrip; }
 
-        protected VFXAbstractParticleOutput(bool strip = false) : base(strip ? VFXDataType.ParticleStrip : VFXDataType.Particle) {}
+        protected VFXAbstractParticleOutput(bool strip = false) : base(strip ? VFXDataType.ParticleStrip : VFXDataType.Particle) { }
 
         public override bool codeGeneratorCompute { get { return false; } }
 
@@ -573,7 +573,7 @@ namespace UnityEditor.VFX
         {
             get
             {
-                yield return new VFXMapping("sortPriority", vfxSystemSortPriority);
+                yield return new VFXMapping("sortPriority", sortPriority);
                 if (HasIndirectDraw())
                 {
                     yield return new VFXMapping("indirectDraw", 1);

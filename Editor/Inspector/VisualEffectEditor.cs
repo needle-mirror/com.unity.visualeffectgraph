@@ -1148,7 +1148,7 @@ namespace UnityEditor.VFX
             GUILayout.Space(1); // Space for the line if the last category is closed.
         }
 
-        protected virtual void PropertyOverrideChanged() {}
+        protected virtual void PropertyOverrideChanged() { }
 
         private void DrawRendererProperties()
         {
@@ -1235,7 +1235,7 @@ namespace UnityEditor.VFX
                         && parameters[2].ParameterType == typeof(GUIStyle)
                         && parameters[3].ParameterType == typeof(GUIStyle))
                     {
-                        return delegate(GUIContent label, SerializedProperty layerID, GUIStyle style, GUIStyle labelStyle)
+                        return delegate (GUIContent label, SerializedProperty layerID, GUIStyle style, GUIStyle labelStyle)
                         {
                             function.Invoke(null, new object[] { label, layerID, style, labelStyle });
                         };

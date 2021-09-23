@@ -22,7 +22,6 @@ namespace UnityEditor.VFX
 
         void AddSlot(VFXSlot slot, int index = -1);
         void RemoveSlot(VFXSlot slot);
-        void ReplaceSlot(VFXSlot prevSlot, VFXSlot newSlot);
 
         int GetSlotIndex(VFXSlot slot);
 
@@ -170,16 +169,6 @@ namespace UnityEditor.VFX
             }
         }
 
-        public virtual void ReplaceSlot(VFXSlot prevSlot, VFXSlot newSlot) { InnerReplaceSlot(prevSlot, newSlot, true); }
-        private void InnerReplaceSlot(VFXSlot prevSlot, VFXSlot newSlot, bool notify)
-        {
-            int index = GetSlotIndex(prevSlot);
-            InnerRemoveSlot(prevSlot, false);
-            InnerAddSlot(newSlot, index, false);
-            if (notify)
-                Invalidate(InvalidationCause.kStructureChanged);
-        }
-
         public int GetSlotIndex(VFXSlot slot)
         {
             var slotList = slot.direction == VFXSlot.Direction.kInput ? m_InputSlots : m_OutputSlots;
@@ -187,7 +176,7 @@ namespace UnityEditor.VFX
         }
 
         protected VFXSlotContainerModel()
-        {}
+        { }
 
         public override void OnEnable()
         {
@@ -435,7 +424,7 @@ namespace UnityEditor.VFX
             return m_expandedPaths.Contains(fieldPath);
         }
 
-        public virtual void UpdateOutputExpressions() {}
+        public virtual void UpdateOutputExpressions() { }
 
         public virtual VFXCoordinateSpace GetOutputSpaceFromSlot(VFXSlot slot)
         {

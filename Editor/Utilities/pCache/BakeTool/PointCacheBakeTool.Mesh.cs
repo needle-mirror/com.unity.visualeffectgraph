@@ -103,7 +103,7 @@ namespace UnityEditor.Experimental.VFX.Utility
                 public Vector4 tangent;
                 public Vector4[] uvs;
 
-                public static Vertex operator+(Vertex a, Vertex b)
+                public static Vertex operator +(Vertex a, Vertex b)
                 {
                     if (a.uvs.Length != b.uvs.Length)
                         throw new InvalidOperationException("Adding compatible vertex");
@@ -123,7 +123,7 @@ namespace UnityEditor.Experimental.VFX.Utility
                     return r;
                 }
 
-                public static Vertex operator*(float a, Vertex b)
+                public static Vertex operator *(float a, Vertex b)
                 {
                     var r = new Vertex()
                     {
