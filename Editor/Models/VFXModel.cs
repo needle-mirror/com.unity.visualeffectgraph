@@ -54,8 +54,8 @@ namespace UnityEditor.VFX
             kEnableChanged,         // Node has been enabled/disabled
         }
 
-        public new virtual string name  { get { return string.Empty; } }
-        public virtual string libraryName  { get { return name; } }
+        public new virtual string name { get { return string.Empty; } }
+        public virtual string libraryName { get { return name; } }
 
         public delegate void InvalidateEvent(VFXModel model, InvalidationCause cause);
 

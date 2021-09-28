@@ -67,7 +67,7 @@ namespace UnityEditor.VFX
 
         private VFXSRPSubOutput CreateDefaultSubOutput()
         {
-            var defaultSubOutput  = ScriptableObject.CreateInstance<VFXSRPSubOutput>();
+            var defaultSubOutput = ScriptableObject.CreateInstance<VFXSRPSubOutput>();
             defaultSubOutput.Init(this);
             return defaultSubOutput;
         }
