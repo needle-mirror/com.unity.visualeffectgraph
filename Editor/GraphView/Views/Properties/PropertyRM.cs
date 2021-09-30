@@ -26,7 +26,7 @@ namespace UnityEditor.VFX.UI
         VFXPropertyAttributes attributes { get; }
         object[] customAttributes { get; }
         Type portType { get; }
-        int depth {get; }
+        int depth { get; }
         bool editable { get; }
 
         IEnumerable<int> filteredOutEnumerators { get; }
@@ -74,7 +74,7 @@ namespace UnityEditor.VFX.UI
             }
         }
 
-        public virtual IEnumerable<int>  filteredOutEnumerators { get { return null; } }
+        public virtual IEnumerable<int> filteredOutEnumerators { get { return null; } }
 
         string IPropertyRMProvider.name
         {
@@ -309,7 +309,7 @@ namespace UnityEditor.VFX.UI
                     VisualElement line = new VisualElement();
                     line.style.width = 1;
                     line.name = "line";
-                    line.style.marginLeft =  depthOffset + (i == 0 ? -2 : 0);
+                    line.style.marginLeft = depthOffset + (i == 0 ? -2 : 0);
                     line.style.marginRight = ((i == provider.depth - 1) ? 2 : 0);
 
                     Add(line);
@@ -349,7 +349,7 @@ namespace UnityEditor.VFX.UI
             }
         }
 
-        static readonly Dictionary<Type, Type> m_TypeDictionary =  new Dictionary<Type, Type>
+        static readonly Dictionary<Type, Type> m_TypeDictionary = new Dictionary<Type, Type>
         {
             {typeof(Vector), typeof(VectorPropertyRM)},
             {typeof(Position), typeof(PositionPropertyRM)},
@@ -480,7 +480,7 @@ namespace UnityEditor.VFX.UI
                     }
                     catch (System.Exception)
                     {
-                        Debug.Log("Error Trying to convert" + (obj != null ? obj.GetType().Name : "null") + " to " +  typeof(T).Name);
+                        Debug.Log("Error Trying to convert" + (obj != null ? obj.GetType().Name : "null") + " to " + typeof(T).Name);
                     }
                 }
             }

@@ -707,7 +707,7 @@ namespace UnityEditor.VFX
                 new EventDesc() { name = VisualEffectAsset.StopEventName, startSystems = new List<VFXContext>(), stopSystems = allStopNotLinked, initSystems = new List<VFXContext>() },
             }.ToList();
 
-            var specialNames = new HashSet<string>(new string[] {VisualEffectAsset.PlayEventName, VisualEffectAsset.StopEventName});
+            var specialNames = new HashSet<string>(new string[] { VisualEffectAsset.PlayEventName, VisualEffectAsset.StopEventName });
 
             var events = contexts.Where(o => o.contextType == VFXContextType.Event);
             foreach (var evt in events)
@@ -908,7 +908,7 @@ namespace UnityEditor.VFX
                 if (data.NeedsComputeBounds())
                 {
                     boundsBufferIndex = bufferDescs.Count;
-                    bufferDescs.Add(new VFXGPUBufferDesc(){type = ComputeBufferType.Default, size = 6, stride = 4});
+                    bufferDescs.Add(new VFXGPUBufferDesc() { type = ComputeBufferType.Default, size = 6, stride = 4 });
                 }
                 buffers.boundsBuffers.Add(data, boundsBufferIndex); // TODO Ludovic : Fill the data index and stuff
             }

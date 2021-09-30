@@ -201,7 +201,7 @@ namespace UnityEditor.VFX
                 var lifeTime = data.IsCurrentAttributeWritten(VFXAttribute.Lifetime);
                 var age = data.IsCurrentAttributeUsed(VFXAttribute.Age);
                 var positionVelocity = data.IsCurrentAttributeWritten(VFXAttribute.Velocity);
-                var angularVelocity =   data.IsCurrentAttributeWritten(VFXAttribute.AngularVelocityX) ||
+                var angularVelocity = data.IsCurrentAttributeWritten(VFXAttribute.AngularVelocityX) ||
                     data.IsCurrentAttributeWritten(VFXAttribute.AngularVelocityY) ||
                     data.IsCurrentAttributeWritten(VFXAttribute.AngularVelocityZ);
 

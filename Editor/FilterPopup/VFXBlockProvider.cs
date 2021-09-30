@@ -150,7 +150,7 @@ namespace UnityEditor.VFX.UI
 
         protected override string title
         {
-            get {return "Block"; }
+            get { return "Block"; }
         }
 
         protected override IEnumerable<VFXBlockProvider.Descriptor> GetDescriptors()

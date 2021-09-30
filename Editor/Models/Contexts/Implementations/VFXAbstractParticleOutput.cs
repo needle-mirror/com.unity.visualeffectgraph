@@ -125,7 +125,7 @@ namespace UnityEditor.VFX
 
         public virtual void SetupMaterial(Material material) {}
 
-        public bool HasIndirectDraw()   { return (indirectDraw || HasSorting() || VFXOutputUpdate.HasFeature(outputUpdateFeatures, VFXOutputUpdate.Features.IndirectDraw)) && !HasStrips(true); }
+        public bool HasIndirectDraw() { return (indirectDraw || HasSorting() || VFXOutputUpdate.HasFeature(outputUpdateFeatures, VFXOutputUpdate.Features.IndirectDraw)) && !HasStrips(true); }
         public virtual bool HasSorting() { return (sort == SortMode.On || (sort == SortMode.Auto && (blendMode == BlendMode.Alpha || blendMode == BlendMode.AlphaPremultiplied))) && !HasStrips(true); }
         public bool HasComputeCulling() { return computeCulling && !HasStrips(true); }
         public bool HasFrustumCulling() { return frustumCulling && !HasStrips(true); }
@@ -256,11 +256,11 @@ namespace UnityEditor.VFX
                             VFXNamedExpression mainTextureExp;
                             try
                             {
-                                mainTextureExp = slotExpressions.First(o => (o.name == "mainTexture") | (o.name == "baseColorMap") | (o.name == "distortionBlurMap") |  (o.name == "normalMap"));
+                                mainTextureExp = slotExpressions.First(o => (o.name == "mainTexture") | (o.name == "baseColorMap") | (o.name == "distortionBlurMap") | (o.name == "normalMap"));
                             }
                             catch (InvalidOperationException)
                             {
-                                throw  new NotImplementedException("Trying to fetch an inexistent slot Main Texture or Base Color Map or Distortion Blur Map or Normal Map. ");
+                                throw new NotImplementedException("Trying to fetch an inexistent slot Main Texture or Base Color Map or Distortion Blur Map or Normal Map. ");
                             }
                             yield return new VFXNamedExpression(new VFXExpressionCastUintToFloat(new VFXExpressionTextureDepth(mainTextureExp.exp)), "flipBookSize");
                         }
@@ -604,6 +604,10 @@ namespace UnityEditor.VFX
                 default:
                     vertsCount = 0;
                     break;
+            }
+            if (HasStrips(false))
+            {
+                vertsCount /= 2;
             }
             return vertsCount != 0;
         }
