@@ -18,3 +18,4 @@ The **Camera** inline Operator allows you to store an instance of a [Camera](Typ
 | **Output** | Camera   | The value of the Operator. |
 
 [!include[](Snippets/Operator-InlineNotes.md)]
+

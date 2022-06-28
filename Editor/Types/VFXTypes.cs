@@ -7,6 +7,10 @@ using UnityEngine.VFX;
 
 namespace UnityEditor.VFX
 {
+    [AttributeUsage(AttributeTargets.Struct)]
+    class VFXTypeAttribute : Attribute
+    {}
+
     enum SpaceableType
     {
         None,
@@ -28,18 +32,6 @@ namespace UnityEditor.VFX
 
     class ShowAsColorAttribute : Attribute
     {}
-    public class MinMaxAttribute : PropertyAttribute
-    {
-        public readonly float min;
-        public readonly float max;
-
-        // Attribute used to make a float or int variable in a script be restricted to a specific range.
-        public MinMaxAttribute(float min, float max)
-        {
-            this.min = min;
-            this.max = max;
-        }
-    }
 
     class CoordinateSpaceInfo
     {
@@ -290,37 +282,6 @@ namespace UnityEditor.VFX
     }
 
     [VFXType, Serializable]
-    struct CameraBuffer
-    {
-        private Texture texture;
-
-        public CameraBuffer(Texture texture)
-        {
-            this.texture = texture;
-        }
-
-        public static implicit operator Texture(CameraBuffer cameraBuffer)
-        {
-            return cameraBuffer.texture;
-        }
-
-        public static implicit operator CameraBuffer(Texture texture)
-        {
-            return new CameraBuffer(texture);
-        }
-
-        public static implicit operator int(CameraBuffer cameraBuffer)
-        {
-            return cameraBuffer.texture?.GetInstanceID() ?? 0;
-        }
-
-        public static implicit operator CameraBuffer(int id)
-        {
-            return new CameraBuffer((Texture)EditorUtility.InstanceIDToObject(id));
-        }
-    }
-
-    [VFXType, Serializable]
     struct CameraType
     {
         [Tooltip("The camera's Transform in the world.")]
@@ -336,9 +297,9 @@ namespace UnityEditor.VFX
         [Min(0.0f), Tooltip("The width and height of the camera in pixels.")]
         public Vector2 pixelDimensions;
         [Tooltip("The depth buffer of the camera, containing the rendered depth information.")]
-        public CameraBuffer depthBuffer;
+        public Texture2DArray depthBuffer;
         [Tooltip("The color buffer of the camera, containing the rendered color information.")]
-        public CameraBuffer colorBuffer;
+        public Texture2DArray colorBuffer;
 
         public static CameraType defaultValue = new CameraType { transform = Transform.defaultValue, fieldOfView = 60.0f * Mathf.Deg2Rad, nearPlane = 0.3f, farPlane = 1000.0f, aspectRatio = 1.0f, pixelDimensions = new Vector2(1920, 1080) };
     }

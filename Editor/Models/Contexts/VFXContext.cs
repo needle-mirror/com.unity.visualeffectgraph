@@ -39,7 +39,7 @@ namespace UnityEditor.VFX
         OutputEvent =   1 << 1,
         Particle =      1 << 2,
         Mesh =          1 << 3,
-        ParticleStrip = 1 << 4 | Particle, // strips
+        ParticleStrip = 1 << 4 | Particle, // strips 
     };
 
     [Serializable]
@@ -139,7 +139,6 @@ namespace UnityEditor.VFX
         public virtual IEnumerable<string> additionalDefines            { get { return Enumerable.Empty<string>(); } }
         public virtual IEnumerable<KeyValuePair<string, VFXShaderWriter>> additionalReplacements { get { return Enumerable.Empty<KeyValuePair<string, VFXShaderWriter>>(); } }
         public virtual IEnumerable<string> fragmentParameters           { get { return Enumerable.Empty<string>(); } }
-        public virtual IEnumerable<string> vertexParameters             { get { return Enumerable.Empty<string>(); } }
 
         public virtual bool CanBeCompiled()
         {
@@ -264,8 +263,8 @@ namespace UnityEditor.VFX
             if (from.m_ContextType == VFXContextType.SpawnerGPU && to.m_ContextType == VFXContextType.OutputEvent)
                 return false;
 
-            //Can't connect directly event to context to OutputEvent
-            if (from.m_ContextType == VFXContextType.Event && to.contextType == VFXContextType.OutputEvent)
+            //Can't connect directly event to context (OutputEvent or Initialize) for now
+            if (from.m_ContextType == VFXContextType.Event && to.contextType != VFXContextType.Spawner && to.contextType != VFXContextType.Subgraph)
                 return false;
 
             return true;
@@ -331,7 +330,7 @@ namespace UnityEditor.VFX
         {
             if (from == to)
                 return false;
-            if (from == VFXContextType.Spawner || from == VFXContextType.Event)
+            if (from == VFXContextType.Spawner)
                 return false;
             return true;
         }
@@ -610,25 +609,6 @@ namespace UnityEditor.VFX
 
             foreach (var block in children)
                 block.CheckGraphBeforeImport();
-        }
-
-        //TODO: Register all the contexts that have issues when transfering settings (in ConvertContext() )
-        protected virtual IEnumerable<string> untransferableSettings
-        {
-            get
-            {
-                return Enumerable.Empty<string>();
-            }
-        }
-
-        public bool CanTransferSetting(string settingName)
-        {
-            return !untransferableSettings.Contains(settingName);
-        }
-
-        public bool CanTransferSetting(VFXSetting setting)
-        {
-            return CanTransferSetting(setting.field.Name);
         }
     }
 }

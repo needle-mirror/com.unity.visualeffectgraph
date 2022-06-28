@@ -18,3 +18,4 @@ The **Torus** inline Operator allows you to store an instance of a [Torus](Type-
 | **Output** | Torus   | The value of the Operator. |
 
 [!include[](Snippets/Operator-InlineNotes.md)]
+

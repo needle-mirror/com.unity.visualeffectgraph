@@ -18,3 +18,4 @@ The **Gradient** inline Operator allows you to store an instance of a Gradient. 
 | **Output** | Gradient   | The value of the Operator. |
 
 [!include[](Snippets/Operator-InlineNotes.md)]
+

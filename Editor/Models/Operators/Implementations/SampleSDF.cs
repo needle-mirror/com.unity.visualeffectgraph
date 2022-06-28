@@ -6,6 +6,7 @@ namespace UnityEditor.VFX.Operator
     [VFXInfo(category = "Sampling")]
     class SampleSDF : VFXOperator
     {
+
         override public string name { get { return "Sample Signed Distance Field"; } }
 
         public class InputProperties
@@ -30,13 +31,16 @@ namespace UnityEditor.VFX.Operator
 
         protected override sealed VFXExpression[] BuildExpression(VFXExpression[] inputExpression)
         {
+
             VFXExpression inverseTRS = new VFXExpressionInverseTRSMatrix(inputExpression[1]);
             VFXExpression scale = new VFXExpressionExtractScaleFromMatrix(inputExpression[1]);
             VFXExpression uvw = new VFXExpressionTransformPosition(inverseTRS, inputExpression[2]) + VFXValue.Constant(new Vector3(0.5f, 0.5f, 0.5f));
             VFXExpression distanceExpr =  new VFXExpressionSampleSDF(inputExpression[0], uvw, scale, inputExpression[3]);
-            VFXExpression directionExpr = new VFXExpressionSampleSDFNormal(inputExpression[0], inverseTRS, uvw, inputExpression[3]) * VFXValue.Constant(new Vector3(-1.0f, -1.0f, -1.0f));
+            VFXExpression directionExpr = new VFXExpressionSampleSDFNormal(inputExpression[0],inverseTRS, uvw, inputExpression[3]) * VFXValue.Constant(new Vector3(-1.0f, -1.0f, -1.0f));
 
             return new[] { distanceExpr, directionExpr };
         }
+
+
     }
 }

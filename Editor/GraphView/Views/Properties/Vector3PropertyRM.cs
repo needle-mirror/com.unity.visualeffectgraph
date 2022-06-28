@@ -50,6 +50,7 @@ namespace UnityEditor.VFX.UI
 
             m_VectorField.onValueDragFinished = ValueDragFinished;
             m_VectorField.onValueDragStarted = ValueDragStarted;
+
         }
 
         public override void UpdateGUI(bool force)

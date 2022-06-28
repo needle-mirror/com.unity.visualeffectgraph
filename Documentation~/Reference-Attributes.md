@@ -1,3 +1,4 @@
+<div style="border: solid 1px #999; border-radius:12px; background-color:#EEE; padding: 8px; padding-left:14px; color: #555; font-size:14px;"><b>Draft:</b> The content on this page is complete, but it has not been reviewed yet.</div>
 # Standard Attribute Reference
 
 ## Standard Attributes
@@ -6,7 +7,7 @@ Here is a comprehensive List of all commonly used attributes, with a brief descr
 
 ### Basic Simulation Attributes
 
-The Initialize and Update Contexts use Simulation Attributes to apply behavior to **simulated elements** such as Particles or Particle Trails.
+Simulation Attributes are attributes that the Initialize and Update Context will process in order to apply behavior to **simulated elements**, such as Particles or Particle Trails.
 
 | Name       | Type    | Description                                                  | Default Value                                     |
 | ---------- | ------- | ------------------------------------------------------------ | ---------- |
@@ -24,6 +25,7 @@ Some attributes are a bit more advanced and will be used by default in most simu
 | Name       | Type    | Description                                                  | Default Value                                     |
 | ---------- | ------- | ------------------------------------------------------------ | ---------- |
 | `mass` | float | The mass of a particle in Kg/dm^3 | 1.0 (defaults to 1kg per liter of water) |
+| `direction` | Vector3 | You can use this attribute in the following ways:<br/>&#8226;As a storage helper to store arbitrary direction.<br/>&#8226;Use any block that sets a shape position to write to the direction attribute. For example, Set Position (Shape : Circle). | (0.0, 0.0, 1.0) |
 | `angle` | Vector3 | **Variadic:** Euler rotation of a simulated element, expressed as a Vector of Degrees Values. | (0,0,0) |
 | `angularVelocity` | Vector3 | **Variadic:** Euler rotation speed of a simulated element, expressed as a Vector of Degrees per second values. | (0,0,0) |
 | `oldPosition` | Vector3 | **Deprecated:** This attribute is a storage Helper if you want to back-up current position of a simulated element, before integrating its velocity. | (0,0,0) |
@@ -31,7 +33,7 @@ Some attributes are a bit more advanced and will be used by default in most simu
 
 ### Rendering Attributes
 
-Rendering Attributes are not used in simulation but are useful when you want to render a simulated element.
+Rendering attributes are not used primarily in simulation but instead are useful when it comes to render a simulated element.
 
 | Name       | Type    | Description                                                  | Default Value                                     |
 | ---------- | ------- | ------------------------------------------------------------ | ---------- |
@@ -47,7 +49,7 @@ Rendering Attributes are not used in simulation but are useful when you want to 
 
 ### System Attributes
 
-System Attributes provide information about system values. These attributes are available as **Read Only**, which means you can only read them using the `Get <Attribute>` Operator.
+Some other Attributes are available in order to get information about system values. These attributes are available as **Read Only** (You can only read them using the `Get <Attribute>` Operator.
 
 | Name       | Type    | Description                                                  | Default Value                                     |
 | ---------- | ------- | ------------------------------------------------------------ | ---------- |
@@ -58,7 +60,7 @@ System Attributes provide information about system values. These attributes are 
 | `particleIndexInStrip` | uint | The index in the Particle Strip Ring Buffer where is located this element. | 0 |
 ## Attribute Usage and Implicit Behavior
 
-Some attributes combinations are used in various implicit cases during simulation and rendering. Here is a list of the usages and an explanation of their relationships.
+Some attributes combinations are used in various implicit cases during the simulation and the rendering. Here is a list of the usages and an explanation of their relationships.
 
 #### Velocity and Position : Integration
 
@@ -103,7 +105,7 @@ In order to apply scaling and rotation to simulated elements, Visual Effect Grap
 * `scale`(Vector3) : per-axis size of the particle.
 * `pivot` (Vector3) : pivot position in the unit representation.
 
-The **Pivot** of a particle is computed in an unit box of size 1 : the **unit representation**. By default, it is (0,0,0), the center of the box. You can change its Value to adjust the center of the box. Every face is located at -0.5 or 0.5 in each axis.
+**Pivot** of a particle is computed in an unit box of size 1 : the **unit representation**. By default, it is (0,0,0), the center of the box. You can change its Value to adjust the center of the box. Every face is located at -0.5 or 0.5 in each axis.
 
 ![Pivot Representation in 2D](Images/Pivot2D.png)
 
@@ -118,4 +120,4 @@ The pivot representation can be also generalized in 3D, with the Z Axis being us
 * The uniform `size`
 * The non-uniform `scale`
 
-You can use these attributes to perform uniform and non-uniform scaling independently. For example, use the particle scale to compute an initial random scale, and use the size attribute to animate every element, keeping its ratio.
+You can use any of these two attributes to perform uniform and non-uniform scaling independently : for instance use the scale to compute an initial random scale, and use the size attribute to animate every element, keeping its ratio.

@@ -18,3 +18,4 @@ The **ArcTorus** inline Operator allows you to store an instance of an [ArcTorus
 | **Output** | ArcTorus   | The value of the Operator. |
 
 [!include[](Snippets/Operator-InlineNotes.md)]
+

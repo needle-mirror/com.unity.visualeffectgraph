@@ -18,3 +18,4 @@ The **OrientedBox** inline Operator allows you to store an instance of an [Orien
 | **Output** | OrientedBox   | The value of the Operator. |
 
 [!include[](Snippets/Operator-InlineNotes.md)]
+

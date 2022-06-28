@@ -1,6 +1,6 @@
 # Load Texture2DArray
 
-Menu Path : **Operator > Sampling > Load Texture2DArray**
+Menu Path : **Operator > Sampling > Load Texture2DArray** 
 
 The **Load Texture2DArray** Operator reads a Texture2DArray’s texel value for specified coordinates and slice. This Operator returns the float4 texel value without any filtering.
 
@@ -24,4 +24,4 @@ This translates to a Load() call on the texture in High-Level Shading Language (
 
 ## Limitations
 
-This Operator only runs on the GPU, therefore it does not work when plugged into **Spawner Context** ports.
+This Operator only runs on the GPU, therefore it does not work when plugged into **Spawner context** ports.

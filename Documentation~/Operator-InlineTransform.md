@@ -18,3 +18,4 @@ The **Transform** inline Operator allows you to store an instance of a [Transfor
 | **Output** | Transform   | The value of the Operator. |
 
 [!include[](Snippets/Operator-InlineNotes.md)]
+

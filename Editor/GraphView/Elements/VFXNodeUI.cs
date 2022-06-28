@@ -18,10 +18,6 @@ namespace UnityEditor.VFX.UI
         {
             get { return m_Controller; }
         }
-
-        public delegate void SelectionEvent(bool selfSelected);
-
-        public event SelectionEvent onSelectionDelegate;
         public void OnMoved()
         {
             controller.position = GetPosition().position;
@@ -74,7 +70,7 @@ namespace UnityEditor.VFX.UI
 
         static string UXMLResourceToPackage(string resourcePath)
         {
-            return VisualEffectAssetEditorUtility.editorResourcesPath + "/" + resourcePath + ".uxml";
+            return VisualEffectGraphPackageInfo.assetPackagePath + "/Editor Default Resources/" + resourcePath + ".uxml";
         }
 
         public VFXNodeUI(string template) : base(UXMLResourceToPackage(template))
@@ -122,20 +118,12 @@ namespace UnityEditor.VFX.UI
         {
             base.OnSelected();
             m_Selected = true;
-            if (onSelectionDelegate != null)
-            {
-                onSelectionDelegate(m_Selected);
-            }
             UpdateBorder();
         }
 
         public override void OnUnselected()
         {
             m_Selected = false;
-            if (onSelectionDelegate != null)
-            {
-                onSelectionDelegate(m_Selected);
-            }
             UpdateBorder();
             base.OnUnselected();
         }

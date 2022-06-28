@@ -15,6 +15,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace UnityEditor.VFX
 {
+
     enum VFXErrorType
     {
         Warning,
@@ -31,7 +32,7 @@ namespace UnityEditor.VFX
     class VFXErrorManager
     {
         public Action<VFXModel, VFXErrorOrigin> onClearAllErrors;
-        public Action<VFXModel, VFXErrorOrigin, string, VFXErrorType, string> onRegisterError;
+        public Action<VFXModel, VFXErrorOrigin,string,VFXErrorType, string> onRegisterError;
 
         public void ClearAllErrors(VFXModel model, VFXErrorOrigin errorOrigin)
         {
@@ -42,7 +43,7 @@ namespace UnityEditor.VFX
         public void RegisterError(VFXModel model, VFXErrorOrigin errorOrigin, string error, VFXErrorType type, string description)
         {
             if (onRegisterError != null)
-                onRegisterError(model, errorOrigin, error, type, description);
+                onRegisterError(model, errorOrigin, error,type, description);
         }
     }
 
@@ -61,10 +62,10 @@ namespace UnityEditor.VFX
         {
         }
 
-        public void RegisterError(string error, VFXErrorType type, string description)
+        public void RegisterError(string error,VFXErrorType type, string description)
         {
-            if (!m_Model.IsErrorIgnored(error))
-                m_Manager.RegisterError(m_Model, VFXErrorOrigin.Invalidate, error, type, description);
+            if( ! m_Model.IsErrorIgnored(error))
+                m_Manager.RegisterError(m_Model, VFXErrorOrigin.Invalidate, error,type, description);
         }
     }
 
@@ -81,10 +82,10 @@ namespace UnityEditor.VFX
         {
         }
 
-        public void RegisterError(VFXModel model, string error, VFXErrorType type, string description)
+        public void RegisterError(VFXModel model, string error,VFXErrorType type, string description)
         {
             if (model != null && !model.IsErrorIgnored(error))
-                m_Manager.RegisterError(model, VFXErrorOrigin.Compilation, error, type, description);
+                m_Manager.RegisterError(model, VFXErrorOrigin.Compilation,error,type, description);
         }
     }
 }

@@ -13,15 +13,15 @@ namespace UnityEditor.VFX
             get
             {
                 var builtInFlag =
-                    Enum.GetValues(typeof(VFXDynamicBuiltInParameter.BuiltInFlag))
-                        .Cast<VFXDynamicBuiltInParameter.BuiltInFlag>()
-                        .Where(o => o != VFXDynamicBuiltInParameter.BuiltInFlag.None)
-                        .Concat(
-                            new[]
-                            {
-                                VFXDynamicBuiltInParameter.s_allVFXTime,
-                                VFXDynamicBuiltInParameter.s_allGameTime
-                            });
+                Enum.GetValues(typeof(VFXDynamicBuiltInParameter.BuiltInFlag))
+                .Cast<VFXDynamicBuiltInParameter.BuiltInFlag>()
+                .Where(o => o != VFXDynamicBuiltInParameter.BuiltInFlag.None)
+                .Concat(
+                    new[]
+                    {
+                        VFXDynamicBuiltInParameter.s_allVFXTime,
+                        VFXDynamicBuiltInParameter.s_allGameTime
+                    });
 
                 return new Dictionary<string, object[]>
                 {
@@ -142,7 +142,7 @@ namespace UnityEditor.VFX
             {
                 bool anyVFXTime = (m_BuiltInParameters & s_allVFXTime) != 0;
                 bool anyGameTime = (m_BuiltInParameters & s_allGameTime) != 0;
-                bool shouldUseLongName = false;
+                bool shouldUseLongName = false; 
                 if (anyVFXTime || anyGameTime)
                 {
                     //When confusion is possible, use long name
@@ -176,6 +176,19 @@ namespace UnityEditor.VFX
                     return "Game Time";
 
                 return "Built-In Properties";
+            }
+        }
+
+        public override VFXCoordinateSpace GetOutputSpaceFromSlot(VFXSlot outputSlot)
+        {
+            switch (m_BuiltInParameters)
+            {
+                case BuiltInFlag.LocalToWorld:
+                    return VFXCoordinateSpace.Local;
+                case BuiltInFlag.WorldToLocal:
+                    return VFXCoordinateSpace.World;
+                default:
+                    return (VFXCoordinateSpace)int.MaxValue;
             }
         }
 

@@ -78,7 +78,7 @@ namespace UnityEditor.VFX
             return true; // both null
         }
 
-        public static bool operator!=(SerializableType left, SerializableType right)
+        public static bool operator !=(SerializableType left, SerializableType right)
         {
             return !(left == right);
         }
@@ -502,11 +502,6 @@ namespace UnityEditor.VFX
 
                     return listObj;
                 }
-            }
-            else if (type == typeof(GraphicsBuffer))
-            {
-                //We can't desarialize or allocate a default GraphicsBuffer
-                return null;
             }
             else
             {

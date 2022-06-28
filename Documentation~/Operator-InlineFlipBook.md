@@ -18,3 +18,4 @@ The **FlipBook** inline Operator allows you to store an instance of a FlipBook. 
 | **Output** | FlipBook   | The value of the Operator. |
 
 [!include[](Snippets/Operator-InlineNotes.md)]
+

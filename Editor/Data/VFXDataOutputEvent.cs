@@ -61,7 +61,7 @@ namespace UnityEditor.VFX
                 return;
             }
 
-            var allMatchingVFXOutputEvent = contextToCompiledData.Keys.Where(context =>
+            var allMatchingVFXDataOutputEvent = contextToCompiledData.Keys.Where(context =>
             {
                 if (context.contextType == VFXContextType.OutputEvent)
                 {
@@ -71,9 +71,8 @@ namespace UnityEditor.VFX
                     }
                 }
                 return false;
-            }).ToArray();
+            }).Select(o => o.GetData()).Cast<VFXDataOutputEvent>().ToArray();
 
-            var allMatchingVFXDataOutputEvent = allMatchingVFXOutputEvent.Select(o => o.GetData()).Cast<VFXDataOutputEvent>().ToArray();
             var flowInputLinks = allMatchingVFXDataOutputEvent.SelectMany(data => data.m_Contexts.SelectMany(context =>
             {
                 if (effectiveFlowInputLinks.ContainsKey(context))

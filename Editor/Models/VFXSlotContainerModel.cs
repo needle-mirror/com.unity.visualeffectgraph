@@ -281,7 +281,8 @@ namespace UnityEditor.VFX
             }
         }
 
-        public VFXSlot GetSlotByPath(bool input, string path)
+
+        public VFXSlot GetSlotByPath(bool input,string path)
         {
             string[] elements = path.Split('_');
 
@@ -350,7 +351,7 @@ namespace UnityEditor.VFX
                     var slot = existingSlots.Find(s => p.property.Equals(s.property));
                     if (slot != null)
                     {
-                        slot.UpdateAttributes(p.property.attributes, notify);
+                        slot.UpdateAttributes(p.property.attributes,notify);
                         existingSlots.Remove(slot);
                     }
                     else
@@ -400,7 +401,8 @@ namespace UnityEditor.VFX
             {
                 // Update properties
                 for (int i = 0; i < nbSlots; ++i)
-                    currentSlots[i].UpdateAttributes(expectedProperties[i].property.attributes, notify);
+                    currentSlots[i].UpdateAttributes(expectedProperties[i].property.attributes,notify);
+                    
             }
 
             return recreate;

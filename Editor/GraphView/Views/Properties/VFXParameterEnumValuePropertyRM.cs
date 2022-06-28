@@ -14,6 +14,7 @@ using VFXVector4Field = UnityEditor.VFX.UI.VFXVector4Field;
 
 namespace UnityEditor.VFX.UI
 {
+
     class VFXListParameterEnumValuePropertyRM : ListPropertyRM<string, StringPropertyRM>
     {
         public VFXListParameterEnumValuePropertyRM(IPropertyRMProvider controller, float labelWidth) : base(controller, labelWidth)
@@ -22,7 +23,7 @@ namespace UnityEditor.VFX.UI
 
         protected override StringPropertyRM CreateField(IPropertyRMProvider provider)
         {
-            return new StringPropertyRM(provider, 18);
+            return new StringPropertyRM(provider,18);
         }
 
         protected override string CreateItem()

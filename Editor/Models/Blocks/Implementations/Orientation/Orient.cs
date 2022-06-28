@@ -81,7 +81,7 @@ namespace UnityEditor.VFX.Block
         private bool canTestStrips => flattenedParent as VFXAbstractParticleOutput; // Cannot check strip in subblock context or not child of a context
         private bool hasStrips => ((VFXAbstractParticleOutput)flattenedParent).HasStrips(); // direct cast as canTestStrips is supposed to have been called priorly
 
-        public override string name { get { return "Orient: " + ObjectNames.NicifyVariableName(mode.ToString()); } }
+        public override string name { get { return "Orient : " + ObjectNames.NicifyVariableName(mode.ToString()); } }
 
         public override VFXContextType compatibleContexts { get { return VFXContextType.Output; } }
         public override VFXDataType compatibleData { get { return VFXDataType.Particle; } }
@@ -196,7 +196,7 @@ axisZ = cross(axisX, axisY);
                         }
                         else
                             return @"
-if (IsPerspectiveProjection())
+if (IsPerspectiveProjection()) 
 {
     axisZ = normalize(position - GetViewVFXPosition());
     axisX = normalize(cross(GetVFXToViewRotMatrix()[1].xyz,axisZ));

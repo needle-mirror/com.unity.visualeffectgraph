@@ -1,6 +1,6 @@
 # Sample Texture2DArray
 
-Menu Path : **Operator > Sampling > Sample Texture2DArray**
+Menu Path : **Operator > Sampling > Sample Texture2DArray** 
 
 The **Sample Texture2DArray** Operator samples a Texture2DArray for a specified slice, UV and mip level. This Operator uses the same **Filter Mode** and **Wrap Mode** as the input texture’s [import settings](https://docs.unity3d.com/Manual/class-TextureImporter.html).
 
@@ -23,4 +23,4 @@ This translates to a Sample() call on the texture in High-Level Shading Language
 
 ## Limitations
 
-This Operator only runs on the GPU, therefore it does not work when plugged into **Spawner Context** ports.
+This Operator only runs on the GPU, therefore it does not work when plugged into **Spawner context** ports.

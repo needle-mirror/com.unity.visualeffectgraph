@@ -18,3 +18,4 @@ The **AnimationCurve** inline Operator allows you to store an instance of an [An
 | **Output** | AnimationCurve   | The value of the Operator. |
 
 [!include[](Snippets/Operator-InlineNotes.md)]
+

@@ -23,9 +23,9 @@ The following example teleports a Game Object to the Given position when it rece
 public class VFXOutputEventTeleportObject : VFXOutputEventAbstractHandler
 {
     public Transform target;
-
+    
     static readonly int kPosition = Shader.PropertyToID("position");
-
+    
     public override void OnVFXOutputEvent(VFXEventAttribute eventAttribute)
     {
         if(target != null)

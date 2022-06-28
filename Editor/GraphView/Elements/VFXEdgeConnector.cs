@@ -9,6 +9,7 @@ using UnityEngine.Profiling;
 using Type = System.Type;
 
 
+
 using PositionType = UnityEngine.UIElements.Position;
 
 namespace UnityEditor.VFX.UI
@@ -16,10 +17,11 @@ namespace UnityEditor.VFX.UI
     class VFXEdgeConnector : EdgeConnector<VFXDataEdge>
     {
         VFXDataAnchor m_Anchor;
-        public VFXEdgeConnector(VFXDataAnchor anchor) : base(anchor)
+        public VFXEdgeConnector(VFXDataAnchor anchor):base(anchor)
         {
             m_Anchor = anchor;
         }
+
 
         protected override void OnMouseMove(MouseMoveEvent e)
         {
@@ -27,7 +29,7 @@ namespace UnityEditor.VFX.UI
 
             if (!e.isPropagationStopped)
                 return;
-
+            
             VFXView view = m_Anchor.GetFirstAncestorOfType<VFXView>();
             if (view == null)
                 return;
@@ -37,7 +39,7 @@ namespace UnityEditor.VFX.UI
 
             VFXDataAnchor anchor = s_PickedList.OfType<VFXDataAnchor>().FirstOrDefault();
 
-            if (anchor != null)
+            if(anchor != null)
                 view.StartEdgeDragInfo(this.edgeDragHelper.draggedPort as VFXDataAnchor, anchor);
             else
                 view.StopEdgeDragInfo();
@@ -54,6 +56,7 @@ namespace UnityEditor.VFX.UI
             if (view == null)
                 return;
             view.StopEdgeDragInfo();
+
         }
 
         static List<VisualElement> s_PickedList = new List<VisualElement>();

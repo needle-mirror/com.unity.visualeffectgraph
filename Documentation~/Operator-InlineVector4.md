@@ -18,3 +18,4 @@ The **Vector4** inline Operator allows you to store an instance of a Vector4. Th
 | **Output** | Vector4   | The value of the Operator. |
 
 [!include[](Snippets/Operator-InlineNotes.md)]
+

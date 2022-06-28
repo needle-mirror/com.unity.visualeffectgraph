@@ -18,3 +18,4 @@ The **Sphere** inline Operator allows you to store an instance of a [Sphere](Typ
 | **Output** | Sphere   | The value of the Operator. |
 
 [!include[](Snippets/Operator-InlineNotes.md)]
+

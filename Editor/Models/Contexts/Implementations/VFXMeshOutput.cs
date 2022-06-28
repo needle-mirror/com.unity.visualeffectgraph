@@ -9,15 +9,7 @@ namespace UnityEditor.VFX
     [VFXInfo]
     class VFXMeshOutput : VFXShaderGraphParticleOutput, IVFXMultiMeshOutput
     {
-        public override string name
-        {
-            get
-            {
-                if (shaderName != string.Empty)
-                    return $"Output Particle {shaderName} Mesh";
-                return "Output Particle Mesh";
-            }
-        }
+        public override string name { get { return "Output Particle Mesh"; } }
         public override string codeGeneratorTemplate { get { return RenderPipeTemplate("VFXParticleMeshes"); } }
         public override VFXTaskType taskType { get { return VFXTaskType.ParticleMeshOutput; } }
         public override bool supportsUV { get { return GetOrRefreshShaderGraphObject() == null; } }
@@ -95,7 +87,7 @@ namespace UnityEditor.VFX
                     yield return property;
 
                 if (GetOrRefreshShaderGraphObject() == null)
-                    foreach (var property in optionalInputProperties)
+                    foreach (var property in PropertiesFromType("OptionalInputProperties"))
                         yield return property;
             }
         }
@@ -116,13 +108,10 @@ namespace UnityEditor.VFX
             }
         }
 
-
-        protected IEnumerable<VFXPropertyWithValue> optionalInputProperties
+        public class OptionalInputProperties
         {
-            get
-            {
-                yield return new VFXPropertyWithValue(new VFXProperty(GetFlipbookType(), "mainTexture", new TooltipAttribute("Specifies the base color (RGB) and opacity (A) of the particle.")), (usesFlipbook ? null : VFXResources.defaultResources.particleTexture));
-            }
+            [Tooltip("Specifies the base color (RGB) and opacity (A) of the particle.")]
+            public Texture2D mainTexture = VFXResources.defaultResources.particleTexture;
         }
 
         public override VFXExpressionMapper GetExpressionMapper(VFXDeviceTarget target)
@@ -142,16 +131,6 @@ namespace UnityEditor.VFX
             }
 
             return mapper;
-        }
-
-        protected override void GenerateErrors(VFXInvalidateErrorReporter manager)
-        {
-            base.GenerateErrors(manager);
-            var dataParticle = GetData() as VFXDataParticle;
-            if (dataParticle != null && dataParticle.boundsSettingMode != BoundsSettingMode.Manual)
-                manager.RegisterError("WarningBoundsComputation", VFXErrorType.Warning, $"Bounds computation have no sense of what the scale of the output mesh is," +
-                    $" so the resulted computed bounds can be too small or big" +
-                    $" Please use padding to mitigate this discrepancy.");
         }
     }
 }

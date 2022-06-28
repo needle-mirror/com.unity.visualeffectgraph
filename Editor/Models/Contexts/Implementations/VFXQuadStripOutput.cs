@@ -19,27 +19,16 @@ namespace UnityEditor.VFX
         private bool UseCustomZAxis = false;
 
         protected VFXQuadStripOutput() : base(true) {}
-
-        public override string name
-        {
-            get
-            {
-                if (shaderName != string.Empty)
-                    return $"Output ParticleStrip {shaderName} Quad";
-                return "Output ParticleStrip Quad";
-            }
-        }
+        public override string name { get { return "Output ParticleStrip Quad"; } }
         public override string codeGeneratorTemplate { get { return RenderPipeTemplate("VFXParticlePlanarPrimitive"); } }
         public override VFXTaskType taskType { get { return VFXTaskType.ParticleQuadOutput; } }
 
         public override bool supportsUV { get { return true; } }
 
-        protected IEnumerable<VFXPropertyWithValue> optionalInputProperties
+        public class OptionalInputProperties
         {
-            get
-            {
-                yield return new VFXPropertyWithValue(new VFXProperty(GetFlipbookType(), "mainTexture", new TooltipAttribute("Specifies the base color (RGB) and opacity (A) of the particle.")), (usesFlipbook ? null : VFXResources.defaultResources.particleTexture));
-            }
+            [Tooltip("Specifies the base color (RGB) and opacity (A) of the particle.")]
+            public Texture2D mainTexture = VFXResources.defaultResources.particleTexture;
         }
 
         public class CustomUVInputProperties
@@ -54,7 +43,7 @@ namespace UnityEditor.VFX
             {
                 IEnumerable<VFXPropertyWithValue> properties = base.inputProperties;
                 if (GetOrRefreshShaderGraphObject() == null)
-                    properties = properties.Concat(optionalInputProperties);
+                    properties = properties.Concat(PropertiesFromType("OptionalInputProperties"));
                 if (tilingMode == StripTilingMode.Custom)
                     properties = properties.Concat(PropertiesFromType("CustomUVInputProperties"));
                 return properties;
@@ -131,7 +120,7 @@ namespace UnityEditor.VFX
 
                         var axisZNode = CreateInstance<VFXAttributeParameter>();
                         axisZNode.SetSettingValue("attribute", "axisZ");
-                        axisZNode.position = model.position + new Vector2(-225, 150);
+                        axisZNode.position = model.position + new Vector2(-225,150); 
                         model.GetGraph().AddChild(axisZNode);
 
                         axisZNode.GetOutputSlot(0).Link(orientBlock.GetInputSlot(0));

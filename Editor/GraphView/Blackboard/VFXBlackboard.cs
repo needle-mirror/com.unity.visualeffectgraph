@@ -147,18 +147,6 @@ namespace  UnityEditor.VFX.UI
             m_AddButton.SetEnabled(m_Controller != null);
         }
 
-        public VFXBlackboardCategory AddCategory(string initialName)
-        {
-            var newCategoryName = VFXParameterController.MakeNameUnique(initialName, new HashSet<string>(m_Categories.Keys));
-            var newCategory = new VFXBlackboardCategory { title = newCategoryName };
-            newCategory.SetSelectable();
-            this.m_Categories.Add(newCategoryName, newCategory);
-
-            this.Add(newCategory);
-
-            return newCategory;
-        }
-
         DropdownMenuAction.Status GetContextualMenuStatus()
         {
             //Use m_AddButton state which relies on locked & controller status
@@ -173,6 +161,7 @@ namespace  UnityEditor.VFX.UI
             evt.menu.AppendAction("Select Unused", (a) => SelectUnused(), (a) => GetContextualMenuStatus());
         }
 
+
         void SelectAll()
         {
             m_View.ClearSelection();
@@ -184,7 +173,7 @@ namespace  UnityEditor.VFX.UI
             m_View.ClearSelection();
 
             var unused = unusedParameters.ToList();
-            this.Query<BlackboardField>().Where(t => unused.Contains(t.GetFirstAncestorOfType<VFXBlackboardRow>().controller.model)).ForEach(t => m_View.AddToSelection(t));
+            this.Query<BlackboardField>().Where(t=> unused.Contains(t.GetFirstAncestorOfType<VFXBlackboardRow>().controller.model) ).ForEach(t => m_View.AddToSelection(t));
         }
 
         IEnumerable<VFXParameter> unusedParameters
@@ -470,7 +459,7 @@ namespace  UnityEditor.VFX.UI
                 VFXParameter model = parameter.model as VFXParameter;
 
                 var type = model.type;
-                if (type == typeof(GPUEvent) || type == typeof(CameraBuffer))
+                if (type == typeof(GPUEvent))
                     continue;
 
                 menu.AddItem(EditorGUIUtility.TextContent(type.UserFriendlyName()), false, OnAddParameter, parameter);
@@ -498,7 +487,7 @@ namespace  UnityEditor.VFX.UI
             string newCategoryName = EditorGUIUtility.TrTextContent("new category").text;
             int cpt = 1;
 
-            if (controller.graph.UIInfos.categories != null)
+            if(controller.graph.UIInfos.categories != null)
             {
                 while (controller.graph.UIInfos.categories.Any(t => t.name == newCategoryName))
                 {

@@ -11,3 +11,4 @@ The **Subpixel Anti-Aliasing** Block forces the ScaleX and ScaleY to cover at le
 This Block is compatible with the following Contexts:
 
 - Any output Context
+

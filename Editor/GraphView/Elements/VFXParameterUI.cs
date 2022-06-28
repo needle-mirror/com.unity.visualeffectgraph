@@ -54,7 +54,7 @@ namespace UnityEditor.VFX.UI
 
     static class UXMLHelper
     {
-        const string folderName = VisualEffectAssetEditorUtility.editorResourcesFolder;
+        const string folderName = "Editor Default Resources";
 
         public static string GetUXMLPath(string name)
         {

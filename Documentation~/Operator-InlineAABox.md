@@ -18,3 +18,4 @@ The **AABox** inline Operator allows you to store an instance of an [AABox](Type
 | **Output** | AABox   | The value of the Operator. |
 
 [!include[](Snippets/Operator-InlineNotes.md)]
+

@@ -1,6 +1,6 @@
 # Load Texture3D
 
-Menu Path : **Operator > Sampling > Load Texture3D**
+Menu Path : **Operator > Sampling > Load Texture3D** 
 
 The **Load Texture3D** Operator allows you to read a Texture3D’s texel value for specified coordinates and mip level. The float4 texel value is returned without any filtering.
 
@@ -24,4 +24,4 @@ This translates to a Load() call on the texture in High-Level Shading Language (
 
 ## Limitations
 
-This is a GPU only Operator and therefore does not work when plugged into **Spawn Context** ports.
+This is a GPU only operator and therefore does not work when plugged into **Spawn Context** ports.

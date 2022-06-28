@@ -18,3 +18,4 @@ The **Vector** inline Operator allows you to store an instance of a [Vector](Typ
 | **Output** | Vector   | The value of the Operator. |
 
 [!include[](Snippets/Operator-InlineNotes.md)]
+

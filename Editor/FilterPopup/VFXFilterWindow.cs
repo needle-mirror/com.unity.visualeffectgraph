@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace UnityEditor.VFX.UI
 {
@@ -124,7 +125,7 @@ namespace UnityEditor.VFX.UI
 
         private Element[] m_Tree;
         private Element[] m_SearchResultTree;
-        private readonly List<GroupElement> m_Stack = new List<GroupElement>();
+        private List<GroupElement> m_Stack = new List<GroupElement>();
 
         private float m_Anim = 1;
         private int m_AnimTarget = 1;
@@ -142,9 +143,14 @@ namespace UnityEditor.VFX.UI
         {
             get
             {
-                return activeTree != null
-                    ? GetChildAt(activeTree, activeParent, activeParent.selectedIndex)
-                    : null;
+                if (activeTree == null)
+                    return null;
+
+                List<Element> children = GetChildren(activeTree, activeParent);
+                if (children.Count == 0)
+                    return null;
+
+                return children[activeParent.selectedIndex];
             }
         }
         private bool isAnimating { get { return m_Anim != m_AnimTarget; } }
@@ -256,7 +262,8 @@ namespace UnityEditor.VFX.UI
                         break;
 
                     // Try to find a child of the same name as we had before
-                    Element childMatch = GetChildren(activeTree, match).FirstOrDefault(c => c.name == m_Stack[level].name);
+                    List<Element> children = GetChildren(activeTree, match);
+                    Element childMatch = children.FirstOrDefault(c => c.name == m_Stack[level].name);
                     if (childMatch != null && childMatch is GroupElement)
                     {
                         match = childMatch as GroupElement;
@@ -366,7 +373,7 @@ namespace UnityEditor.VFX.UI
                     if (evt.keyCode == KeyCode.DownArrow)
                     {
                         activeParent.selectedIndex++;
-                        activeParent.selectedIndex = Mathf.Min(activeParent.selectedIndex, GetChildren(activeTree, activeParent).Count() - 1);
+                        activeParent.selectedIndex = Mathf.Min(activeParent.selectedIndex, GetChildren(activeTree, activeParent).Count - 1);
                         m_ScrollToSelected = true;
                         evt.Use();
                     }
@@ -425,53 +432,72 @@ namespace UnityEditor.VFX.UI
             }
 
             // Support multiple search words separated by spaces.
-            var lowerSearch = m_Search.ToLower();
-            var searchWords = lowerSearch.Split(' ');
+            string[] searchWords = m_Search.ToLower().Split(' ');
 
-            List<Element> searchResults = new List<Element>();
-            foreach (var e in m_Tree.Where(x => x is not GroupElement))
+            // We keep two lists. Matches that matches the start of an item always get first priority.
+            List<Element> matchesStart = new List<Element>();
+            List<Element> matchesWithin = new List<Element>();
+
+            foreach (Element e in m_Tree)
             {
-                string lowerName = e.name.ToLower();
+                if ((e is GroupElement)) //TODO RF
+                    continue;
 
-                if (lowerName.Contains(lowerSearch) || searchWords.All(x => lowerName.Contains(x)))
+                string name = e.name.ToLower().Replace(" ", "");
+                bool didMatchAll = true;
+                bool didMatchStart = false;
+
+                // See if we match ALL the seaarch words.
+                for (int w = 0; w < searchWords.Length; w++)
                 {
-                    searchResults.Add(e);
+                    string search = searchWords[w];
+                    if (name.Contains(search))
+                    {
+                        // If the start of the item matches the first search word, make a note of that.
+                        if (w == 0 && name.StartsWith(search))
+                            didMatchStart = true;
+                    }
+                    else
+                    {
+                        // As soon as any word is not matched, we disregard this item.
+                        didMatchAll = false;
+                        break;
+                    }
+                }
+                // We always need to match all search words.
+                // If we ALSO matched the start, this item gets priority.
+                if (didMatchAll)
+                {
+                    if (didMatchStart)
+                        matchesStart.Add(e);
+                    else
+                        matchesWithin.Add(e);
                 }
             }
 
+            matchesStart.Sort();
+            matchesWithin.Sort();
+
+            // Create search tree
+            List<Element> tree = new List<Element>();
+            // Add parent
+            tree.Add(new GroupElement(0, kSearchHeader));
+            // Add search results
+            tree.AddRange(matchesStart);
+            tree.AddRange(matchesWithin);
+            // Add the new script element
+            //tree.Add(m_Tree[m_Tree.Length - 1]);
             // Create search result tree
-            m_SearchResultTree = new Element[] {new GroupElement(0, kSearchHeader)}
-                .Union(searchResults.OrderBy(x => this.GetSearchResultRelevancy(x.name.ToLower(), lowerSearch)))
-                .ToArray();
+            m_SearchResultTree = tree.ToArray();
             m_Stack.Clear();
             m_Stack.Add(m_SearchResultTree[0] as GroupElement);
 
             // Always select the first search result when search is changed (e.g. a character was typed in or deleted),
             // because it's usually the best match.
-            if (GetChildren(activeTree, activeParent).Any())
+            if (GetChildren(activeTree, activeParent).Count >= 1)
                 activeParent.selectedIndex = 0;
             else
                 activeParent.selectedIndex = -1;
-        }
-
-        private int GetSearchResultRelevancy(string elementName, string search)
-        {
-            // Minimum score means best result
-            // There are three criteria:
-            // - Equality => 0
-            // - Position of the match => smaller is better
-            // - Length of the name => shorter is better (here we know all names are matching the search in some way)
-
-            if (elementName != search)
-            {
-                var position = elementName.IndexOf(search);
-
-                return position == 0
-                    ? elementName.Length
-                    : 1_000 + elementName.Length;
-            }
-
-            return 0;
         }
 
         private GroupElement GetElementRelative(int rel)
@@ -563,13 +589,13 @@ namespace UnityEditor.VFX.UI
 
             EditorGUIUtility.SetIconSize(new Vector2(16, 16));
 
-            var children = GetChildren(tree, parent).ToArray();
+            List<Element> children = GetChildren(tree, parent);
 
             Rect selectedRect = new Rect();
 
 
             // Iterate through the children
-            for (int i = 0; i < children.Length; i++)
+            for (int i = 0; i < children.Count; i++)
             {
                 Element e = children[i];
                 Rect r = GUILayoutUtility.GetRect(16, 20, GUILayout.ExpandWidth(true));
@@ -634,20 +660,36 @@ namespace UnityEditor.VFX.UI
             }
         }
 
-        private IEnumerable<Element> GetChildren(Element[] tree, Element parent)
+        private List<Element> GetChildren(Element[] tree, Element parent)
         {
-            var childrenLevel = parent.level + 1;
-            return tree.SkipWhile(x => x != parent)
-                .Skip(1)
-                .TakeWhile(x => x.level >= childrenLevel)
-                .Where(x => x.level == childrenLevel || (x.level > childrenLevel && hasSearch));
-        }
+            List<Element> children = new List<Element>();
+            int level = -1;
+            int i = 0;
+            for (i = 0; i < tree.Length; i++)
+            {
+                if (tree[i] == parent)
+                {
+                    level = parent.level + 1;
+                    i++;
+                    break;
+                }
+            }
+            if (level == -1)
+                return children;
 
-        private Element GetChildAt(Element[] tree, Element parent, int childIndex)
-        {
-            return this.GetChildren(tree, parent)
-                .Skip(childIndex)
-                .FirstOrDefault();
+            for (; i < tree.Length; i++)
+            {
+                Element e = tree[i];
+
+                if (e.level < level)
+                    break;
+                if (e.level > level && !hasSearch)
+                    continue;
+
+                children.Add(e);
+            }
+
+            return children;
         }
     }
 

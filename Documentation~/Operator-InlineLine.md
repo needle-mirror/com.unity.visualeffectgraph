@@ -18,3 +18,4 @@ The **Line** inline Operator allows you to store an instance of a [Line](Type-Li
 | **Output** | Line   | The value of the Operator. |
 
 [!include[](Snippets/Operator-InlineNotes.md)]
+

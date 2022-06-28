@@ -13,3 +13,4 @@ The **Transpose (Matrix)** Operator flips a matrix across its diagonal, swapping
 | **Output** | **Type** | **Description**                      |
 | ---------- | -------- | ------------------------------------ |
 | **Matrix** | Matrix   | The result of the transposed Matrix. |
+

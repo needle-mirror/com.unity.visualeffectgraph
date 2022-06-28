@@ -18,3 +18,4 @@ The **Cone** inline Operator allows you to store an instance of a [Cone](Type-Co
 | **Output** | Cone   | The value of the Operator. |
 
 [!include[](Snippets/Operator-InlineNotes.md)]
+

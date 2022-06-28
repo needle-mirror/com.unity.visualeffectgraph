@@ -208,16 +208,16 @@ namespace UnityEditor.VFX.UI
                 float controlWidth = 50;
                 GetPreferedWidths(ref labelWidth, ref controlWidth);
 
-                ApplySettingsWidths(settingsLabelWidth, settingsControlWidth);
+                float newMinWidth = Mathf.Max(settingsLabelWidth + settingsControlWidth, labelWidth + controlWidth) + 20;
 
-                ApplyWidths(labelWidth, controlWidth);
-
-                // Do not let the UI reduce in width so that collapse button does not move
-                var newMinWidth = resolvedStyle.width;
-                if (resolvedStyle.minWidth.value < newMinWidth)
+                if (resolvedStyle.minWidth != newMinWidth)
                 {
                     style.minWidth = newMinWidth;
                 }
+
+                ApplySettingsWidths(settingsLabelWidth, settingsControlWidth);
+
+                ApplyWidths(labelWidth, controlWidth);
             }
             else
             {

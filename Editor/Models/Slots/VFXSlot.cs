@@ -47,9 +47,9 @@ namespace UnityEditor.VFX
                         slotValue = m_FieldInfoCache.GetValue(parentValue);
                     }
 
-                    if (slotValue == null && !typeof(UnityEngine.Object).IsAssignableFrom(property.type) && property.type != typeof(GraphicsBuffer))
+                    if (slotValue == null && !typeof(UnityEngine.Object).IsAssignableFrom(property.type))
                     {
-                        Debug.Log("null value in slot of type " + property.type.UserFriendlyName());
+                        Debug.Log("null value in slot of type" + property.type.UserFriendlyName());
                     }
                     return slotValue;
                 }
@@ -381,11 +381,6 @@ namespace UnityEditor.VFX
                 foreach (var subInfo in property.SubProperties())
                 {
                     var subSlot = CreateSub(subInfo, direction);
-                    if (slot.property.attributes.attributes.OfType<MinMaxAttribute>().Any())
-                    {
-                        var parentRange = property.attributes.FindRange();
-                        subSlot.UpdateAttributes(new VFXPropertyAttributes(new RangeAttribute(parentRange.x, parentRange.y)), false);
-                    }
                     if (subSlot != null)
                     {
                         subSlot.Attach(slot, false);
@@ -480,28 +475,11 @@ namespace UnityEditor.VFX
                 dst = dst.children.First();
             }
 
-            if (copySubLinks)
+            if (copySubLinks && src.GetNbChildren() == dst.GetNbChildren())
             {
-                if (src.GetNbChildren() == dst.GetNbChildren())
-                {
-                    //If number of slot is equal, copy index by index (OrientedBox <=> Transform)
-                    foreach (var srcSlot in src.children)
-                    {
-                        int nbSubSlots = src.GetNbChildren();
-                        for (int i = 0; i < nbSubSlots; ++i)
-                            CopyLinks(dst[i], src[i], notify);
-                    }
-                }
-                else
-                {
-                    //If number slot is different, try matching by name (Sphere without angles during sanitize)
-                    foreach (var srcSlot in src.children)
-                    {
-                        var dstSlot = dst.children.FirstOrDefault(o => o.name == srcSlot.name);
-                        if (dstSlot != null)
-                            CopyLinks(dstSlot, srcSlot, notify);
-                    }
-                }
+                int nbSubSlots = src.GetNbChildren();
+                for (int i = 0; i < nbSubSlots; ++i)
+                    CopyLinks(dst[i], src[i], notify);
             }
         }
 
@@ -581,48 +559,44 @@ namespace UnityEditor.VFX
             if (!hierarchySane)
             {
                 Debug.LogWarningFormat("Slot {0} holding {1} didnt match the type layout. It is recreated and all links are lost.", property.name, property.type);
-                return Recreate();
+
+                // Try to retrieve the value
+                object previousValue = null;
+                try
+                {
+                    previousValue = this.value;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarningFormat("Exception while trying to retrieve value: {0}: {1}", e, e.StackTrace);
+                }
+
+                // Recreate the slot
+                var newSlot = Create(property, direction, previousValue);
+                if (IsMasterSlot())
+                {
+                    var owner = this.owner;
+                    if (owner != null)
+                    {
+                        int index = owner.GetSlotIndex(this);
+                        owner.RemoveSlot(this);
+                        owner.AddSlot(newSlot, index);
+                    }
+                }
+                else
+                {
+                    var parent = GetParent();
+                    var index = parent.GetIndex(this);
+                    parent.RemoveChild(this, false);
+                    parent.AddChild(newSlot, index);
+                }
+
+                CopyLinks(newSlot, this, true);
+                CopySpace(newSlot, this, true);
+                UnlinkAll(true);
+                return newSlot;
             }
             return this;
-        }
-
-        public VFXSlot Recreate()
-        {
-            // Try to retrieve the value
-            object previousValue = null;
-            try
-            {
-                previousValue = this.value;
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarningFormat("Exception while trying to retrieve value: {0}: {1}", e, e.StackTrace);
-            }
-
-            // Recreate the slot
-            var newSlot = Create(property, direction, previousValue);
-            if (IsMasterSlot())
-            {
-                var owner = this.owner;
-                if (owner != null)
-                {
-                    int index = owner.GetSlotIndex(this);
-                    owner.RemoveSlot(this);
-                    owner.AddSlot(newSlot, index);
-                }
-            }
-            else
-            {
-                var parent = GetParent();
-                var index = parent.GetIndex(this);
-                parent.RemoveChild(this, false);
-                parent.AddChild(newSlot, index);
-            }
-
-            CopyLinks(newSlot, this, true);
-            CopySpace(newSlot, this, true);
-            UnlinkAll(true);
-            return newSlot;
         }
 
         private void SetDefaultExpressionValue()
@@ -729,7 +703,7 @@ namespace UnityEditor.VFX
                 owner.Invalidate(this, cause);
         }
 
-        public void UpdateAttributes(VFXPropertyAttributes attributes, bool notify)
+        public void UpdateAttributes(VFXPropertyAttributes attributes,bool notify)
         {
             if (notify)
             {
@@ -737,7 +711,7 @@ namespace UnityEditor.VFX
                 {
                     m_Property.attributes = attributes;
                     Invalidate(InvalidationCause.kUIChangedTransient); // TODO This will trigger a setDirty while it shouldn't as property attributes are not serialized
-                }
+                }         
             }
             else // fast path without comparison
                 m_Property.attributes = attributes;
@@ -794,7 +768,7 @@ namespace UnityEditor.VFX
 
         public bool CanLink(VFXSlot other)
         {
-            return direction != other.direction &&
+            return direction != other.direction && !m_LinkedSlots.Contains(other) &&
                 ((direction == Direction.kInput && CanConvertFrom(other.property.type)) || (other.CanConvertFrom(property.type)));
         }
 

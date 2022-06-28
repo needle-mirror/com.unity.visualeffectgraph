@@ -1,8 +1,8 @@
 #if VFX_HAS_PHYSICS
 #if ENABLE_INPUT_SYSTEM && VFX_HAS_INPUT_SYSTEM_PACKAGE
     #define USE_INPUT_SYSTEM
-using UnityEngine.InputSystem;
-using System.Linq;
+    using UnityEngine.InputSystem;
+    using System.Linq;
 #endif
 
 using System.Collections;
@@ -80,9 +80,9 @@ namespace UnityEngine.VFX.Utility
             {
                 mouseOver = newMouseOver;
                 if (newMouseOver)
-                    DoOnMouseOver();
+                    DoOnMouseOver(); 
                 else
-                    DoOnMouseExit();
+                    DoOnMouseExit(); 
             }
         }
 
@@ -121,7 +121,6 @@ namespace UnityEngine.VFX.Utility
             UnityEditor.EditorApplication.update -= RayCastDrag;
 #endif
         }
-
 #endif
 
         static Vector2 GetMousePosition()
@@ -193,7 +192,6 @@ namespace UnityEngine.VFX.Utility
         {
             DoOnMouseExit();
         }
-
 #endif
     }
 }

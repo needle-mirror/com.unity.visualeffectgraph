@@ -23,6 +23,7 @@ namespace UnityEditor.VFX.UI
             Add(m_List);
         }
 
+
         protected class ReorderableList : VFXReorderableList
         {
             ListPropertyRM<T, U> m_List;
@@ -31,7 +32,6 @@ namespace UnityEditor.VFX.UI
             {
                 m_List = list;
             }
-
             public override void OnAdd()
             {
                 m_List.OnAdd();
@@ -41,7 +41,6 @@ namespace UnityEditor.VFX.UI
             {
                 m_List.OnRemove(index);
             }
-
             protected override void ElementMoved(int movedIndex, int targetIndex)
             {
                 base.ElementMoved(movedIndex, targetIndex);
@@ -66,7 +65,7 @@ namespace UnityEditor.VFX.UI
             Update();
         }
 
-        void ElementMoved(int movedIndex, int targetIndex)
+        void ElementMoved(int movedIndex,int targetIndex)
         {
             var list = ((List<T>)m_Provider.value);
             T tmp = list[movedIndex];
@@ -87,12 +86,11 @@ namespace UnityEditor.VFX.UI
         {
             return 150;
         }
-
         public override void UpdateGUI(bool force)
         {
             List<T> list = (List<T>)m_Provider.value;
             int itemCount = 0;
-            if (list != null)
+            if(list != null )
             {
                 itemCount = list.Count;
             }
@@ -114,9 +112,10 @@ namespace UnityEditor.VFX.UI
             }
         }
 
+
         class ItemProvider : IPropertyRMProvider
         {
-            ListPropertyRM<T, U> m_List;
+            ListPropertyRM<T,U> m_List;
             public int m_Index;
 
             public ItemProvider(ListPropertyRM<T, U> list, int index)
@@ -131,8 +130,7 @@ namespace UnityEditor.VFX.UI
 
             bool IPropertyRMProvider.expandableIfShowsEverything => false;
 
-            object IPropertyRMProvider.value
-            {
+            object IPropertyRMProvider.value {
                 get => ((List<T>)m_List.GetValue())[m_Index];
                 set
                 {
@@ -166,14 +164,12 @@ namespace UnityEditor.VFX.UI
             {
                 return false;
             }
-
             IEnumerable<int> IPropertyRMProvider.filteredOutEnumerators { get { return null; } }
 
             void IPropertyRMProvider.RetractPath()
             {
                 throw new NotImplementedException();
             }
-
             void IPropertyRMProvider.StartLiveModification() { m_List.provider.StartLiveModification(); }
             void IPropertyRMProvider.EndLiveModification() { m_List.provider.EndLiveModification(); }
         }

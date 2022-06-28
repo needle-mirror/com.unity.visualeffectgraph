@@ -97,8 +97,8 @@ namespace UnityEditor.VFX.UI
         {}
 
 
-        void IPropertyRMProvider.StartLiveModification() {}
-        void IPropertyRMProvider.EndLiveModification() {}
+        void IPropertyRMProvider.StartLiveModification() { }
+        void IPropertyRMProvider.EndLiveModification() { }
     }
 
     abstract class PropertyRM : VisualElement
@@ -156,19 +156,16 @@ namespace UnityEditor.VFX.UI
             if (m_Label.panel == null) return 40;
 
             VisualElement element = this;
-            while (element != null && string.IsNullOrEmpty(element.resolvedStyle.unityFontDefinition.ToString()))
+            while (element != null && element.resolvedStyle.unityFont == null)
             {
                 element = element.parent;
             }
-
-            if (m_Label.style.unityFont == null && element != null)
+            if (element != null)
             {
-                m_Label.style.unityFont = element.resolvedStyle.unityFontDefinition.font;
+                m_Label.style.unityFont = element.resolvedStyle.unityFont;
+                return m_Label.MeasureTextSize(m_Label.text, -1, MeasureMode.Undefined, m_Label.resolvedStyle.height, MeasureMode.Exactly).x + m_Provider.depth * depthOffset;
             }
-
-            return m_Label.style.unityFont != null
-                ? m_Label.MeasureTextSize(m_Label.text, -1, MeasureMode.Undefined, m_Label.resolvedStyle.height, MeasureMode.Exactly).x + m_Provider.depth * depthOffset
-                : 40 + m_Provider.depth * depthOffset;
+            return 40 + m_Provider.depth * depthOffset;
         }
 
         public abstract float GetPreferredControlWidth();
@@ -506,6 +503,7 @@ namespace UnityEditor.VFX.UI
             m_Field.AddToClassList("fieldContainer");
             m_Field.OnValueChanged += OnValueChanged;
             Add(m_Field);
+
         }
 
         public void OnValueChanged()

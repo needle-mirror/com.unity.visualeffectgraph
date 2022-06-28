@@ -23,7 +23,7 @@ namespace UnityEditor.VFX
                     VFXCacheManager.Clear();*/
 
                 if (GUILayout.Button("Recompile All"))
-                    VFXAssetManager.Build();
+                    VFXCacheManager.Build();
             }
             EditorGUILayout.Space();
             /*
